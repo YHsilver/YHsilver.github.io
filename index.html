@@ -127,7 +127,7 @@
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="th fa-fw"></i>分类<span class="badge">0</span></a>
+    <a href="/categories/" rel="section"><i class="th fa-fw"></i>分类<span class="badge">1</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
@@ -164,7 +164,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yhsilver.xyz/2021/03/11/my-first-bolog-test/">
+    <link itemprop="mainEntityOfPage" href="http://yhsilver.xyz/2021/03/12/Java-EE-Web-%E5%9F%BA%E7%A1%80/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/myAvatar.jpg">
@@ -178,7 +178,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/03/11/my-first-bolog-test/" class="post-title-link" itemprop="url">my first bolog test</a>
+            <a href="/2021/03/12/Java-EE-Web-%E5%9F%BA%E7%A1%80/" class="post-title-link" itemprop="url">Java EE & Web 基础</a>
         </h2>
 
         <div class="post-meta">
@@ -189,7 +189,16 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-11 00:05:48 / 修改时间：00:06:10" itemprop="dateCreated datePublished" datetime="2021-03-11T00:05:48+08:00">2021-03-11</time>
+              <time title="创建时间：2021-03-12 18:23:03 / 修改时间：18:30:25" itemprop="dateCreated datePublished" datetime="2021-03-12T18:23:03+08:00">2021-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/javaEE/" itemprop="url" rel="index"><span itemprop="name">javaEE</span></a>
+                </span>
             </span>
 
           
@@ -203,15 +212,24 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>这是一个测试文件</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/03/11/my-first-bolog-test/">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
+          <h1 id="java-EE-amp-Web基础"><a href="#java-EE-amp-Web基础" class="headerlink" title="java EE &amp; Web基础"></a>java EE &amp; Web基础</h1><h2 id="Servlet"><a href="#Servlet" class="headerlink" title="Servlet"></a>Servlet</h2><h4 id="Servlet-生命周期"><a href="#Servlet-生命周期" class="headerlink" title="Servlet 生命周期"></a>Servlet 生命周期</h4><ul>
+<li><p>Servlet 初始化后调用 <strong>init ()</strong> 方法</p>
+<p>init 方法被设计成只调用一次。它在第一次创建 Servlet 时被调用，在后续每次用户请求时不再调用。</p>
+</li>
+<li><p>Servlet 调用 <strong>service()</strong> 方法来处理客户端的请求。</p>
+<ul>
+<li>doGet()</li>
+<li>doPost()</li>
+</ul>
+</li>
+<li><p>Servlet 销毁前调用 <strong>destroy()</strong> 方法。</p>
+<p>destroy() 方法只会被调用一次，在 Servlet 生命周期结束时被调用。</p>
+</li>
+<li><p>最后，Servlet 是由 JVM 的垃圾回收器进行垃圾回收的。</p>
+</li>
+</ul>
+<p><img src="D:\Blog\source_posts\Java-EE-Web-基础.img\Servlet-LifeCycle.jpg" alt="Servlet 生命周期"></p>
+<h2 id="MVC-MVVM"><a href="#MVC-MVVM" class="headerlink" title="MVC, MVVM"></a>MVC, MVVM</h2>
       
     </div>
 
@@ -261,7 +279,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-03-11 00:16:39" itemprop="dateModified" datetime="2021-03-11T00:16:39+08:00">2021-03-11</time>
+                <time title="修改时间：2021-03-12 18:22:07" itemprop="dateModified" datetime="2021-03-12T18:22:07+08:00">2021-03-12</time>
               </span>
 
           
@@ -275,7 +293,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Hello Hexo</p>
+          <p>Hello my first Blog</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2021/03/10/hello-world/">
@@ -369,6 +387,10 @@
           <span class="site-state-item-count">2</span>
           <span class="site-state-item-name">日志</span>
         </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span>
       </div>
       <div class="site-state-item site-state-tags">
         <span class="site-state-item-count">1</span>

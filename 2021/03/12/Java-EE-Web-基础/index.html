@@ -20,19 +20,22 @@
     var CONFIG = {"hostname":"yhsilver.xyz","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="好好学习，天天向上！">
-<meta property="og:type" content="website">
-<meta property="og:title" content="tags">
-<meta property="og:url" content="http://yhsilver.xyz/tags/index.html">
+  <meta name="description" content="java EE &amp; Web基础ServletServlet 生命周期 Servlet 初始化后调用 init () 方法 init 方法被设计成只调用一次。它在第一次创建 Servlet 时被调用，在后续每次用户请求时不再调用。  Servlet 调用 service() 方法来处理客户端的请求。  doGet() doPost()   Servlet 销毁前调用 destroy() 方法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java EE &amp; Web 基础">
+<meta property="og:url" content="http://yhsilver.xyz/2021/03/12/Java-EE-Web-%E5%9F%BA%E7%A1%80/index.html">
 <meta property="og:site_name" content="Notes">
-<meta property="og:description" content="好好学习，天天向上！">
+<meta property="og:description" content="java EE &amp; Web基础ServletServlet 生命周期 Servlet 初始化后调用 init () 方法 init 方法被设计成只调用一次。它在第一次创建 Servlet 时被调用，在后续每次用户请求时不再调用。  Servlet 调用 service() 方法来处理客户端的请求。  doGet() doPost()   Servlet 销毁前调用 destroy() 方法">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-03-11T16:51:42.000Z">
-<meta property="article:modified_time" content="2021-03-11T16:51:42.240Z">
+<meta property="og:image" content="d:/Blog/source_posts/Java-EE-Web-基础.img/Servlet-LifeCycle.jpg">
+<meta property="article:published_time" content="2021-03-12T10:23:03.000Z">
+<meta property="article:modified_time" content="2021-03-12T10:30:25.737Z">
 <meta property="article:author" content="yanhh">
+<meta property="article:tag" content="-javaEE -Web">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="d:/Blog/source_posts/Java-EE-Web-基础.img/Servlet-LifeCycle.jpg">
 
-<link rel="canonical" href="http://yhsilver.xyz/tags/">
+<link rel="canonical" href="http://yhsilver.xyz/2021/03/12/Java-EE-Web-%E5%9F%BA%E7%A1%80/">
 
 
 <script id="page-configurations">
@@ -40,13 +43,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>tags | Notes
-</title>
+  <title>Java EE & Web 基础 | Notes</title>
   
 
 
@@ -160,43 +162,109 @@
       <div class="main-inner">
         <div class="content-wrap">
           
-  
-  
 
-          <div class="content page posts-expand">
+          <div class="content post posts-expand">
             
 
     
-    
-    
-    <div class="post-block" lang="zh-CN">
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yhsilver.xyz/2021/03/12/Java-EE-Web-%E5%9F%BA%E7%A1%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/myAvatar.jpg">
+      <meta itemprop="name" content="yanhh">
+      <meta itemprop="description" content="好好学习，天天向上！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Notes">
+    </span>
       <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java EE & Web 基础
+        </h1>
 
-<h1 class="post-title" itemprop="name headline">tags
-</h1>
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
 
-<div class="post-meta">
+              <time title="创建时间：2021-03-12 18:23:03 / 修改时间：18:30:25" itemprop="dateCreated datePublished" datetime="2021-03-12T18:23:03+08:00">2021-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/javaEE/" itemprop="url" rel="index"><span itemprop="name">javaEE</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="java-EE-amp-Web基础"><a href="#java-EE-amp-Web基础" class="headerlink" title="java EE &amp; Web基础"></a>java EE &amp; Web基础</h1><h2 id="Servlet"><a href="#Servlet" class="headerlink" title="Servlet"></a>Servlet</h2><h4 id="Servlet-生命周期"><a href="#Servlet-生命周期" class="headerlink" title="Servlet 生命周期"></a>Servlet 生命周期</h4><ul>
+<li><p>Servlet 初始化后调用 <strong>init ()</strong> 方法</p>
+<p>init 方法被设计成只调用一次。它在第一次创建 Servlet 时被调用，在后续每次用户请求时不再调用。</p>
+</li>
+<li><p>Servlet 调用 <strong>service()</strong> 方法来处理客户端的请求。</p>
+<ul>
+<li>doGet()</li>
+<li>doPost()</li>
+</ul>
+</li>
+<li><p>Servlet 销毁前调用 <strong>destroy()</strong> 方法。</p>
+<p>destroy() 方法只会被调用一次，在 Servlet 生命周期结束时被调用。</p>
+</li>
+<li><p>最后，Servlet 是由 JVM 的垃圾回收器进行垃圾回收的。</p>
+</li>
+</ul>
+<p><img src="D:\Blog\source_posts\Java-EE-Web-基础.img\Servlet-LifeCycle.jpg" alt="Servlet 生命周期"></p>
+<h2 id="MVC-MVVM"><a href="#MVC-MVVM" class="headerlink" title="MVC, MVVM"></a>MVC, MVVM</h2>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/javaEE-Web/" rel="tag"><i class="fa fa-tag"></i> -javaEE -Web</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/03/10/hello-world/" rel="prev" title="Hello World">
+      <i class="fa fa-chevron-left"></i> Hello World
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
   
 
-</div>
-
-</header>
-
-      
-      
-      
-      <div class="post-body">
-          
-      </div>
-      
-      
-      
-    </div>
-    
-
-    
-    
-    
 
 
           </div>
@@ -247,6 +315,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#java-EE-amp-Web%E5%9F%BA%E7%A1%80"><span class="nav-number">1.</span> <span class="nav-text">java EE &amp; Web基础</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Servlet"><span class="nav-number">1.1.</span> <span class="nav-text">Servlet</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Servlet-%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="nav-number">1.1.0.1.</span> <span class="nav-text">Servlet 生命周期</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MVC-MVVM"><span class="nav-number">1.2.</span> <span class="nav-text">MVC, MVVM</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
