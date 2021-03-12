@@ -22,23 +22,23 @@
 
   <meta name="description" content="Basic concepts of JavaEE">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java EE &amp; Web 基础">
-<meta property="og:url" content="https://yhsilver.xyz/2021/03/12/Java-EE-Web-%E5%9F%BA%E7%A1%80/index.html">
+<meta property="og:title" content="Java EE">
+<meta property="og:url" content="http://yhsilver.xyz/2021/03/12/JavaEE/index.html">
 <meta property="og:site_name" content="YNotes">
 <meta property="og:description" content="Basic concepts of JavaEE">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://yhsilver.xyz/2021/03/12/Java-EE-Web-%E5%9F%BA%E7%A1%80/Servlet-LifeCycle.jpg?">
-<meta property="og:image" content="https://yhsilver.xyz/2021/03/12/Java-EE-Web-%E5%9F%BA%E7%A1%80/image-20210312185424017.png">
-<meta property="og:image" content="https://yhsilver.xyz/2021/03/12/Java-EE-Web-%E5%9F%BA%E7%A1%80/image-20210312143103505.png">
-<meta property="og:image" content="https://yhsilver.xyz/2021/03/12/Java-EE-Web-%E5%9F%BA%E7%A1%80/image-20210312191124495.png">
+<meta property="og:image" content="http://yhsilver.xyz/2021/03/12/JavaEE/Servlet-LifeCycle.jpg?">
+<meta property="og:image" content="http://yhsilver.xyz/2021/03/12/JavaEE/image-20210312185424017.png">
+<meta property="og:image" content="http://yhsilver.xyz/2021/03/12/JavaEE/image-20210312143103505.png">
+<meta property="og:image" content="http://yhsilver.xyz/2021/03/12/JavaEE/image-20210312191124495.png">
 <meta property="article:published_time" content="2021-03-12T10:23:03.000Z">
-<meta property="article:modified_time" content="2021-03-12T12:33:14.264Z">
+<meta property="article:modified_time" content="2021-03-12T20:54:58.573Z">
 <meta property="article:author" content="yanhh">
 <meta property="article:tag" content="JavaEE">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://yhsilver.xyz/2021/03/12/Java-EE-Web-%E5%9F%BA%E7%A1%80/Servlet-LifeCycle.jpg?">
+<meta name="twitter:image" content="http://yhsilver.xyz/2021/03/12/JavaEE/Servlet-LifeCycle.jpg?">
 
-<link rel="canonical" href="https://yhsilver.xyz/2021/03/12/Java-EE-Web-%E5%9F%BA%E7%A1%80/">
+<link rel="canonical" href="http://yhsilver.xyz/2021/03/12/JavaEE/">
 
 
 <script id="page-configurations">
@@ -51,7 +51,7 @@
   };
 </script>
 
-  <title>Java EE & Web 基础 | YNotes</title>
+  <title>Java EE | YNotes</title>
   
 
 
@@ -130,7 +130,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">2</span></a>
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">3</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -140,7 +140,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">2</span></a>
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">3</span></a>
 
   </li>
   </ul>
@@ -173,7 +173,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://yhsilver.xyz/2021/03/12/Java-EE-Web-%E5%9F%BA%E7%A1%80/">
+    <link itemprop="mainEntityOfPage" href="http://yhsilver.xyz/2021/03/12/JavaEE/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/myAvatar.jpg">
@@ -186,7 +186,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Java EE & Web 基础
+          Java EE
         </h1>
 
         <div class="post-meta">
@@ -195,10 +195,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-12 18:23:03 / 修改时间：20:33:14" itemprop="dateCreated datePublished" datetime="2021-03-12T18:23:03+08:00">2021-03-12</time>
+              <time title="创建时间：2021-03-12 18:23:03" itemprop="dateCreated datePublished" datetime="2021-03-12T18:23:03+08:00">2021-03-12</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-03-13 04:54:58" itemprop="dateModified" datetime="2021-03-13T04:54:58+08:00">2021-03-13</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -237,7 +243,7 @@
 <li><p>最后，Servlet 是由 JVM 的垃圾回收器进行垃圾回收的。</p>
 </li>
 </ul>
-<p><img src="https://yhsilver.xyz/2021/03/12/Java-EE-Web-%E5%9F%BA%E7%A1%80/Servlet-LifeCycle.jpg?" alt="Servlet 生命周期"></p>
+<p><img src="http://yhsilver.xyz/2021/03/12/JavaEE/Servlet-LifeCycle.jpg?" alt="Servlet 生命周期"></p>
 <h4 id="会话作用域"><a href="#会话作用域" class="headerlink" title="会话作用域"></a>会话作用域</h4><p>  Scope：会话跟踪技术的作用域（bean被储存的位置）</p>
 <ul>
 <li>Request：一次请求，被servlet和其转发的目标页所见，<strong>最常用</strong></li>
@@ -254,9 +260,9 @@
 
 
 
-<h2 id="JavaEE中的-MV-框架模式"><a href="#JavaEE中的-MV-框架模式" class="headerlink" title="JavaEE中的 MV* 框架模式"></a>JavaEE中的 MV* 框架模式</h2><h4 id="MVC-设计模式"><a href="#MVC-设计模式" class="headerlink" title="MVC  设计模式"></a>MVC  设计模式</h4><p><img src="https://yhsilver.xyz/2021/03/12/Java-EE-Web-%E5%9F%BA%E7%A1%80/image-20210312185424017.png" alt="image-20210312185424017"></p>
-<h4 id="请求处理过程"><a href="#请求处理过程" class="headerlink" title="请求处理过程"></a>请求处理过程</h4><p><img src="https://yhsilver.xyz/2021/03/12/Java-EE-Web-%E5%9F%BA%E7%A1%80/image-20210312143103505.png" alt="image-20210312143103505"></p>
-<h4 id="MVVM模式"><a href="#MVVM模式" class="headerlink" title="MVVM模式"></a>MVVM模式</h4><p><img src="https://yhsilver.xyz/2021/03/12/Java-EE-Web-%E5%9F%BA%E7%A1%80/image-20210312191124495.png" alt="image-20210312191124495"></p>
+<h2 id="JavaEE中的-MV-框架模式"><a href="#JavaEE中的-MV-框架模式" class="headerlink" title="JavaEE中的 MV* 框架模式"></a>JavaEE中的 MV* 框架模式</h2><h4 id="MVC-设计模式"><a href="#MVC-设计模式" class="headerlink" title="MVC  设计模式"></a>MVC  设计模式</h4><p><img src="http://yhsilver.xyz/2021/03/12/JavaEE/image-20210312185424017.png" alt="image-20210312185424017"></p>
+<h4 id="请求处理过程"><a href="#请求处理过程" class="headerlink" title="请求处理过程"></a>请求处理过程</h4><p><img src="http://yhsilver.xyz/2021/03/12/JavaEE/image-20210312143103505.png" alt="image-20210312143103505"></p>
+<h4 id="MVVM模式"><a href="#MVVM模式" class="headerlink" title="MVVM模式"></a>MVVM模式</h4><p><img src="http://yhsilver.xyz/2021/03/12/JavaEE/image-20210312191124495.png" alt="image-20210312191124495"></p>
 
     </div>
 
@@ -279,7 +285,10 @@
     <a href="/2021/03/10/hello-world/" rel="prev" title="Hello World">
       <i class="fa fa-chevron-left"></i> Hello World
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2021/03/13/Web%E5%9F%BA%E7%A1%80-HTTP/" rel="next" title="Web基础----HTTP">
+      Web基础----HTTP <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -354,7 +363,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-count">3</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -367,7 +376,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
