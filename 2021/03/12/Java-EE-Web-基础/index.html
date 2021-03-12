@@ -20,20 +20,23 @@
     var CONFIG = {"hostname":"yhsilver.xyz","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="java EE &amp; Web基础ServletServlet 生命周期 Servlet 初始化后调用 init () 方法 init 方法被设计成只调用一次。它在第一次创建 Servlet 时被调用，在后续每次用户请求时不再调用。  Servlet 调用 service() 方法来处理客户端的请求。  doGet() doPost()   Servlet 销毁前调用 destroy() 方法">
+  <meta name="description" content="basic concepts of JAVAEE">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java EE &amp; Web 基础">
 <meta property="og:url" content="http://yhsilver.xyz/2021/03/12/Java-EE-Web-%E5%9F%BA%E7%A1%80/index.html">
 <meta property="og:site_name" content="Notes">
-<meta property="og:description" content="java EE &amp; Web基础ServletServlet 生命周期 Servlet 初始化后调用 init () 方法 init 方法被设计成只调用一次。它在第一次创建 Servlet 时被调用，在后续每次用户请求时不再调用。  Servlet 调用 service() 方法来处理客户端的请求。  doGet() doPost()   Servlet 销毁前调用 destroy() 方法">
+<meta property="og:description" content="basic concepts of JAVAEE">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="d:/Blog/source_posts/Java-EE-Web-基础.img/Servlet-LifeCycle.jpg">
+<meta property="og:image" content="file://D:\Blog\source_posts\Java-EE-Web-基础\Servlet-LifeCycle.jpg?lastModify=1615546288">
+<meta property="og:image" content="http://yhsilver.xyz/2021/03/12/Java-EE-Web-%E5%9F%BA%E7%A1%80/Blog/source_posts/Java-EE-Web-基础/image-20210312185424017.png">
+<meta property="og:image" content="file://D:\学习资料\面试\面试\面试准备.img\image-20210312143103505.png?lastModify=1615546567">
+<meta property="og:image" content="http://yhsilver.xyz/2021/03/12/Java-EE-Web-%E5%9F%BA%E7%A1%80/Blog/source_posts/Java-EE-Web-基础/image-20210312191124495.png">
 <meta property="article:published_time" content="2021-03-12T10:23:03.000Z">
-<meta property="article:modified_time" content="2021-03-12T10:30:25.737Z">
+<meta property="article:modified_time" content="2021-03-12T11:18:49.596Z">
 <meta property="article:author" content="yanhh">
-<meta property="article:tag" content="-javaEE -Web">
+<meta property="article:tag" content="javaEE">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="d:/Blog/source_posts/Java-EE-Web-基础.img/Servlet-LifeCycle.jpg">
+<meta name="twitter:image" content="file://D:\Blog\source_posts\Java-EE-Web-基础\Servlet-LifeCycle.jpg?lastModify=1615546288">
 
 <link rel="canonical" href="http://yhsilver.xyz/2021/03/12/Java-EE-Web-%E5%9F%BA%E7%A1%80/">
 
@@ -127,7 +130,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">1</span></a>
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">2</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -194,7 +197,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-12 18:23:03 / 修改时间：18:30:25" itemprop="dateCreated datePublished" datetime="2021-03-12T18:23:03+08:00">2021-03-12</time>
+              <time title="创建时间：2021-03-12 18:23:03 / 修改时间：19:18:49" itemprop="dateCreated datePublished" datetime="2021-03-12T18:23:03+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -202,11 +205,12 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/javaEE/" itemprop="url" rel="index"><span itemprop="name">javaEE</span></a>
+                  <a href="/categories/Web%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">Web基础</span></a>
                 </span>
             </span>
 
           
+            <div class="post-description">basic concepts of JAVAEE</div>
 
         </div>
       </header>
@@ -217,7 +221,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="java-EE-amp-Web基础"><a href="#java-EE-amp-Web基础" class="headerlink" title="java EE &amp; Web基础"></a>java EE &amp; Web基础</h1><h2 id="Servlet"><a href="#Servlet" class="headerlink" title="Servlet"></a>Servlet</h2><h4 id="Servlet-生命周期"><a href="#Servlet-生命周期" class="headerlink" title="Servlet 生命周期"></a>Servlet 生命周期</h4><ul>
+        <h1 id="java-EE"><a href="#java-EE" class="headerlink" title="java EE"></a>java EE</h1><h2 id="Servlet"><a href="#Servlet" class="headerlink" title="Servlet"></a>Servlet</h2><h4 id="Servlet-生命周期"><a href="#Servlet-生命周期" class="headerlink" title="Servlet 生命周期"></a>Servlet 生命周期</h4><ul>
 <li><p>Servlet 初始化后调用 <strong>init ()</strong> 方法</p>
 <p>init 方法被设计成只调用一次。它在第一次创建 Servlet 时被调用，在后续每次用户请求时不再调用。</p>
 </li>
@@ -233,8 +237,27 @@
 <li><p>最后，Servlet 是由 JVM 的垃圾回收器进行垃圾回收的。</p>
 </li>
 </ul>
-<p><img src="D:\Blog\source_posts\Java-EE-Web-基础.img\Servlet-LifeCycle.jpg" alt="Servlet 生命周期"></p>
-<h2 id="MVC-MVVM"><a href="#MVC-MVVM" class="headerlink" title="MVC, MVVM"></a>MVC, MVVM</h2>
+<p><img src="file://D:\Blog\source_posts\Java-EE-Web-基础\Servlet-LifeCycle.jpg?lastModify=1615546288" alt="Servlet 生命周期"></p>
+<h4 id="会话作用域"><a href="#会话作用域" class="headerlink" title="会话作用域"></a>会话作用域</h4><p>  Scope：会话跟踪技术的作用域（bean被储存的位置）</p>
+<ul>
+<li>Request：一次请求，被servlet和其转发的目标页所见，<strong>最常用</strong></li>
+<li>Session：一次会话，同一个用户的所有页面</li>
+<li>Application：所有用户</li>
+</ul>
+<h4 id="过滤器"><a href="#过滤器" class="headerlink" title="过滤器"></a>过滤器</h4><p>Servlet 过滤器可以动态地拦截请求和响应，以变换或使用包含在请求或响应中的信息。</p>
+<p>可以将一个或多个 Servlet 过滤器附加到一个 Servlet 或一组 Servlet。Servlet 过滤器是可用于 Servlet 编程的 Java 类，可以实现以下目的：</p>
+<ul>
+<li>在客户端的请求访问后端资源之前，拦截这些请求。</li>
+<li>在服务器的响应发送回客户端之前，处理这些响应。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//实现 Filter 类</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LogFilter</span> <span class="keyword">implements</span> <span class="title">Filter</span>  </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span>  <span class="title">init</span><span class="params">(FilterConfig config)</span> <span class="keyword">throws</span> ServletException </span>&#123;</span><br><span class="line">     <span class="comment">//web 应用程序启动时，web 服务器将创建Filter 的实例对象，</span></span><br><span class="line">     <span class="comment">//调用取web.xml配置，完成对象的初始化功能</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span>  <span class="title">doFilter</span><span class="params">(ServletRequest request, ServletResponse response, FilterChain chain)</span> <span class="keyword">throws</span> java.io.IOException, ServletException </span>&#123;</span><br><span class="line">     <span class="comment">//该方法完成实际的过滤操作</span></span><br><span class="line">     <span class="comment">//当客户端请求方法与过滤器设置匹配的URL时，Servlet容器将先调用过滤器的doFilter方法</span></span><br><span class="line">		<span class="comment">//do someting...		</span></span><br><span class="line">      	chain.doFilter(request,response); <span class="comment">// 把请求传回过滤链</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">destroy</span><span class="params">( )</span></span>&#123;</span><br><span class="line">        <span class="comment">// 在 Filter 实例被 Web 容器从服务移除之前调用 </span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="JavaEE中的-MV-框架模式"><a href="#JavaEE中的-MV-框架模式" class="headerlink" title="JavaEE中的 MV* 框架模式"></a>JavaEE中的 MV* 框架模式</h2><h4 id="MVC-设计模式"><a href="#MVC-设计模式" class="headerlink" title="MVC  设计模式"></a>MVC  设计模式</h4><p><img src="/2021/03/12/Java-EE-Web-%E5%9F%BA%E7%A1%80/Blog\source_posts\Java-EE-Web-基础\image-20210312185424017.png" alt="image-20210312185424017"></p>
+<h4 id="请求处理过程"><a href="#请求处理过程" class="headerlink" title="请求处理过程"></a>请求处理过程</h4><p><img src="file://D:\学习资料\面试\面试\面试准备.img\image-20210312143103505.png?lastModify=1615546567" alt="image-20210312143103505"></p>
+<h4 id="MVVM模式"><a href="#MVVM模式" class="headerlink" title="MVVM模式"></a>MVVM模式</h4><p><img src="/2021/03/12/Java-EE-Web-%E5%9F%BA%E7%A1%80/Blog\source_posts\Java-EE-Web-基础\image-20210312191124495.png" alt="image-20210312191124495"></p>
+
     </div>
 
     
@@ -244,7 +267,7 @@
       <footer class="post-footer">
           
           <div class="post-tags">
-              <a href="/tags/javaEE-Web/" rel="tag"><i class="fa fa-tag"></i> -javaEE -Web</a>
+              <a href="/tags/javaEE/" rel="tag"><i class="fa fa-tag"></i> javaEE</a>
           </div>
 
         
@@ -315,7 +338,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#java-EE-amp-Web%E5%9F%BA%E7%A1%80"><span class="nav-number">1.</span> <span class="nav-text">java EE &amp; Web基础</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Servlet"><span class="nav-number">1.1.</span> <span class="nav-text">Servlet</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Servlet-%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="nav-number">1.1.0.1.</span> <span class="nav-text">Servlet 生命周期</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MVC-MVVM"><span class="nav-number">1.2.</span> <span class="nav-text">MVC, MVVM</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#java-EE"><span class="nav-number">1.</span> <span class="nav-text">java EE</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Servlet"><span class="nav-number">1.1.</span> <span class="nav-text">Servlet</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Servlet-%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="nav-number">1.1.0.1.</span> <span class="nav-text">Servlet 生命周期</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BC%9A%E8%AF%9D%E4%BD%9C%E7%94%A8%E5%9F%9F"><span class="nav-number">1.1.0.2.</span> <span class="nav-text">会话作用域</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%87%E6%BB%A4%E5%99%A8"><span class="nav-number">1.1.0.3.</span> <span class="nav-text">过滤器</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JavaEE%E4%B8%AD%E7%9A%84-MV-%E6%A1%86%E6%9E%B6%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.2.</span> <span class="nav-text">JavaEE中的 MV* 框架模式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#MVC-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.2.0.1.</span> <span class="nav-text">MVC  设计模式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%B7%E6%B1%82%E5%A4%84%E7%90%86%E8%BF%87%E7%A8%8B"><span class="nav-number">1.2.0.2.</span> <span class="nav-text">请求处理过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MVVM%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.2.0.3.</span> <span class="nav-text">MVVM模式</span></a></li></ol></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -336,12 +359,16 @@
         </a>
       </div>
       <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
         <span class="site-state-item-count">1</span>
-        <span class="site-state-item-name">分类</span>
+        <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">1</span>
-        <span class="site-state-item-name">标签</span>
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
 </div>
