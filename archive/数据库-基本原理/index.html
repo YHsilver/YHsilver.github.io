@@ -20,17 +20,22 @@
     var CONFIG = {"hostname":"yhsilver.xyz","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="好好学习，天天向上！">
-<meta property="og:type" content="website">
-<meta property="og:title" content="YNotes">
-<meta property="og:url" content="http://yhsilver.xyz/categories/Web%E5%9F%BA%E7%A1%80/index.html">
+  <meta name="description" content="Basic concepts of database">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据库----基本原理">
+<meta property="og:url" content="http://yhsilver.xyz/archive/%E6%95%B0%E6%8D%AE%E5%BA%93-%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/index.html">
 <meta property="og:site_name" content="YNotes">
-<meta property="og:description" content="好好学习，天天向上！">
+<meta property="og:description" content="Basic concepts of database">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yhsilver.xyz/archive/%E6%95%B0%E6%8D%AE%E5%BA%93-%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/image-20191207223400787.png">
+<meta property="article:published_time" content="2021-03-15T16:48:14.000Z">
+<meta property="article:modified_time" content="2021-03-15T16:52:02.532Z">
 <meta property="article:author" content="yanhh">
+<meta property="article:tag" content="db">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yhsilver.xyz/archive/%E6%95%B0%E6%8D%AE%E5%BA%93-%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/image-20191207223400787.png">
 
-<link rel="canonical" href="http://yhsilver.xyz/categories/Web%E5%9F%BA%E7%A1%80/">
+<link rel="canonical" href="http://yhsilver.xyz/archive/%E6%95%B0%E6%8D%AE%E5%BA%93-%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/">
 
 
 <script id="page-configurations">
@@ -38,12 +43,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>分类: Web基础 | YNotes</title>
+  <title>数据库----基本原理 | YNotes</title>
   
 
 
@@ -158,71 +163,110 @@
         <div class="content-wrap">
           
 
-          <div class="content category">
+          <div class="content post posts-expand">
             
 
+    
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <h2 class="collection-header">Web基础
-          <small>分类</small>
-        </h2>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yhsilver.xyz/archive/%E6%95%B0%E6%8D%AE%E5%BA%93-%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/myAvatar.jpg">
+      <meta itemprop="name" content="yanhh">
+      <meta itemprop="description" content="好好学习，天天向上！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="YNotes">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数据库----基本原理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-16 00:48:14 / 修改时间：00:52:02" itemprop="dateCreated datePublished" datetime="2021-03-16T00:48:14+08:00">2021-03-16</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">Basic concepts of database</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2021</span>
-    </div>
+        <h1 id="数据库—-基本原理"><a href="#数据库—-基本原理" class="headerlink" title="数据库—-基本原理"></a>数据库—-基本原理</h1><h2 id="事务ACID特性"><a href="#事务ACID特性" class="headerlink" title="事务ACID特性"></a>事务ACID特性</h2><ul>
+<li><strong>原子性：</strong>事务被视为不可分割的最小单元，一个事务（transaction）中的所有操作，要么全部完成，要么全部不完成，不会结束在中间某个环节。</li>
+<li><strong>一致性：</strong>在事务开始之前和事务结束以后，数据库的完整性没有被破坏。</li>
+<li><strong>隔离性：</strong>数据库允许多个并发事务同时对其数据进行读写和修改的能力，不同的事务并发操作，一个事务所做的修改在最终提交以前，对其它事务是不可见的。</li>
+<li><strong>持久性：</strong>事务处理结束后，对数据的修改就是永久的，即便系统故障也不会丢失。</li>
+</ul>
+<h2 id="隔离级别"><a href="#隔离级别" class="headerlink" title="隔离级别"></a>隔离级别</h2><ul>
+<li>读未提交（READ UNCOMMITTED）：可以读未提交的数据。写的时候禁止其他进程写，但不禁止其他进程读</li>
+<li>读提交 （READ COMMITTED）：只能读提交过后的数据。写禁止读。</li>
+<li>可重复读 （REPEATABLE READ）：重复读取的数据相同。读禁止写</li>
+<li>串行化 （SERIALIZABLE）：强制事务串行执行。非并发。</li>
+</ul>
+<p>从上往下，隔离强度逐渐增强，性能逐渐变差。采用哪种隔离级别要根据系统需求权衡决定，其中，<strong>可重复读</strong>是 MySQL 的默认级别。</p>
+<img src="http://yhsilver.xyz/archive/%E6%95%B0%E6%8D%AE%E5%BA%93-%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/image-20191207223400787.png" alt="img" style="zoom: 67%;">
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2021-03-13T05:00:12+08:00"
-              content="2021-03-13">
-          03-13
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/archive/Web%E5%9F%BA%E7%A1%80-HTTP/" itemprop="url">
-            <span itemprop="name">Web基础----HTTP</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2021-03-12T18:23:03+08:00"
-              content="2021-03-12">
-          03-12
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/archive/JavaEE/" itemprop="url">
-            <span itemprop="name">Java EE</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
+<h2 id="并发问题"><a href="#并发问题" class="headerlink" title="并发问题"></a>并发问题</h2><ul>
+<li>脏读：事务A读取了事务B更新的数据，然后B回滚，那么A读取到的数据是脏数据。</li>
+<li>幻读：假设事务A对某些行的内容作了更改，但是还未提交，此时事务B插入了与事务A更改前的记录相同的记录行，并且在事务A提交之前先提交了，而这时，在事务A中查询，会发现好像刚刚的更改对于某些数据未起作用，但其实是事务B刚插入进来的，让用户感觉很魔幻，感觉出现了幻觉，这就叫幻读。<strong>行锁</strong>仅仅加在了符合条件的记录行上，此时其他写事务，虽然不能操作加有行锁的记录行，但是完全可以操作其他数据行，甚至是新增一条新纪录行。</li>
+<li>不可重复读：对比可重复读，不可重复读指的是在同一事务内，不同的时刻读到的同一批数据可能是不一样的，可能会受到其他事务的影响，比如其他事务改了这批数据并提交了。</li>
+</ul>
 
     </div>
-  </div>
-  
-  
-  
 
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/db/" rel="tag"><i class="fa fa-tag"></i> db</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/archive/Linux-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" rel="prev" title="Linux----文件系统">
+      <i class="fa fa-chevron-left"></i> Linux----文件系统
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
   
 
 
@@ -275,6 +319,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E2%80%94-%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">数据库—-基本原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8B%E5%8A%A1ACID%E7%89%B9%E6%80%A7"><span class="nav-number">1.1.</span> <span class="nav-text">事务ACID特性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="nav-number">1.2.</span> <span class="nav-text">隔离级别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91%E9%97%AE%E9%A2%98"><span class="nav-number">1.3.</span> <span class="nav-text">并发问题</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
