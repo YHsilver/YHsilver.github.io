@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.ico">
+  <link rel="mask-icon" href="/images/favicon.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.1/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yhsilver.xyz","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Introduction to Computer Networking">
+<meta property="og:type" content="article">
+<meta property="og:title" content="计算机网络（一）">
+<meta property="og:url" content="http://yhsilver.xyz/archive/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%EF%BC%88%E4%B8%80%EF%BC%89/index.html">
+<meta property="og:site_name" content="YNotes">
+<meta property="og:description" content="Introduction to Computer Networking">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yhsilver.xyz/archive/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%EF%BC%88%E4%B8%80%EF%BC%89/0fa6c237-a909-4e2a-a771-2c5485cd8ce0.png">
+<meta property="og:image" content="http://yhsilver.xyz/archive/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%EF%BC%88%E4%B8%80%EF%BC%89/image-20210312164407848.png">
+<meta property="og:image" content="http://yhsilver.xyz/archive/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%EF%BC%88%E4%B8%80%EF%BC%89/image-20210307192643796.png">
+<meta property="og:image" content="http://yhsilver.xyz/archive/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%EF%BC%88%E4%B8%80%EF%BC%89/image-20210307192915548.png">
+<meta property="og:image" content="http://yhsilver.xyz/archive/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%EF%BC%88%E4%B8%80%EF%BC%89/学习资料\面试\面试\面试准备.img\tcp_state.png">
+<meta property="og:image" content="http://yhsilver.xyz/archive/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%EF%BC%88%E4%B8%80%EF%BC%89/910f613f-514f-4534-87dd-9b4699d59d31.png">
+<meta property="og:image" content="http://yhsilver.xyz/archive/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%EF%BC%88%E4%B8%80%EF%BC%89/20190812162258440.png">
+<meta property="article:published_time" content="2021-03-17T15:24:22.000Z">
+<meta property="article:modified_time" content="2021-03-17T15:44:03.651Z">
+<meta property="article:author" content="yanhh">
+<meta property="article:tag" content="TCP">
+<meta property="article:tag" content="OSI">
+<meta property="article:tag" content="DNS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yhsilver.xyz/archive/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%EF%BC%88%E4%B8%80%EF%BC%89/0fa6c237-a909-4e2a-a771-2c5485cd8ce0.png">
+
+<link rel="canonical" href="http://yhsilver.xyz/archive/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%EF%BC%88%E4%B8%80%EF%BC%89/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>计算机网络（一） | YNotes</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">YNotes</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">16</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="th fa-fw"></i>分类<span class="badge">4</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">9</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/YHsilver" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yhsilver.xyz/archive/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%EF%BC%88%E4%B8%80%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/myAvatar.jpg">
+      <meta itemprop="name" content="yanhh">
+      <meta itemprop="description" content="好好学习，天天向上！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="YNotes">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          计算机网络（一）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-17 23:24:22 / 修改时间：23:44:03" itemprop="dateCreated datePublished" datetime="2021-03-17T23:24:22+08:00">2021-03-17</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">Introduction to Computer Networking</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="OSI-amp-TCP-IP模型"><a href="#OSI-amp-TCP-IP模型" class="headerlink" title="OSI &amp; TCP/IP模型"></a>OSI &amp; TCP/IP模型</h2><img src="http://yhsilver.xyz/archive/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%EF%BC%88%E4%B8%80%EF%BC%89/0fa6c237-a909-4e2a-a771-2c5485cd8ce0.png" alt="0fa6c237-a909-4e2a-a771-2c5485cd8ce0" style="zoom: 67%;">
+
+<p><img src="http://yhsilver.xyz/archive/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%EF%BC%88%E4%B8%80%EF%BC%89/image-20210312164407848.png" alt="image-20210312164407848"></p>
+<p><strong>TCP/IP 四层结构的优点</strong></p>
+<ol>
+<li>较好的平衡了网络系统难度和运行效率，使应用层的功能定义更加清晰</li>
+<li>网络接口层的开放性：IP over X（不同实现：以太网，ATM…），为网际层屏蔽了不同网络类型之间的区别。</li>
+<li>定义了各层协议</li>
+</ol>
+<h2 id="TCP-IP"><a href="#TCP-IP" class="headerlink" title="TCP/IP"></a>TCP/IP</h2><h3 id="TCP握手-挥手"><a href="#TCP握手-挥手" class="headerlink" title="TCP握手/挥手"></a>TCP握手/挥手</h3><p><img src="http://yhsilver.xyz/archive/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%EF%BC%88%E4%B8%80%EF%BC%89/image-20210307192643796.png" alt="image-20210307192643796"><img src="http://yhsilver.xyz/archive/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%EF%BC%88%E4%B8%80%EF%BC%89/image-20210307192915548.png" alt="image-20210307192915548" style="zoom:67%;"></p>
+<img src="http://yhsilver.xyz/archive/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%EF%BC%88%E4%B8%80%EF%BC%89/学习资料\面试\面试\面试准备.img\tcp_state.png" alt="img" style="zoom: 50%;">
+
+<p><strong>为什么连接需要3次，挥手需要4次</strong></p>
+<p>因为当Server端收到Client端的SYN连接请求报文后，可以直接发送SYN+ACK报文。其中ACK报文是用来应答的，SYN报文是用来同步的。</p>
+<p>但是关闭连接时，当Server端收到FIN报文时，很可能并不会立即关闭SOCKET，所以只能先回复一个ACK报文，告诉Client端，”你发的FIN报文我收到了”。只有等到我Server端所有的报文都发送完了，我才能发送FIN报文，因此不能一起发送。故需要四步握手</p>
+<p><strong>为什么不是两次？</strong></p>
+<p>C在S的应答分组在传输中被丢失的情况下，将不知道S 是否已准备好，永远不能建立新的连接了</p>
+<h3 id="TCP-UDP-区别"><a href="#TCP-UDP-区别" class="headerlink" title="TCP UDP 区别"></a>TCP UDP 区别</h3><table>
+<thead>
+<tr>
+<th align="left"></th>
+<th align="left">UDP</th>
+<th align="left">TCP</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">是否连接</td>
+<td align="left">无连接</td>
+<td align="left">面向连接</td>
+</tr>
+<tr>
+<td align="left">是否可靠</td>
+<td align="left">不可靠传输，不使用流量控制和拥塞控制</td>
+<td align="left">可靠传输，使用流量控制和拥塞控制</td>
+</tr>
+<tr>
+<td align="left">连接对象个数</td>
+<td align="left">支持一对一，一对多，多对一和多对多交互通信</td>
+<td align="left">只能是一对一通信</td>
+</tr>
+<tr>
+<td align="left">传输方式</td>
+<td align="left">面向报文，不合并也不拆分</td>
+<td align="left">面向字节流，不保留报文边界</td>
+</tr>
+<tr>
+<td align="left">首部开销</td>
+<td align="left">首部开销小，仅8字节</td>
+<td align="left">首部最小20字节，最大60字节</td>
+</tr>
+<tr>
+<td align="left">适用场景</td>
+<td align="left">适用于实时应用（IP电话、视频会议、直播等）</td>
+<td align="left">适用于要求可靠传输的应用，例如文件传输</td>
+</tr>
+</tbody></table>
+<ul>
+<li>TCP向上层提供面向连接的可靠服务 ，UDP向上层提供无连接不可靠服务。</li>
+<li>虽然 UDP 并没有 TCP 传输来的准确，但是也能在很多实时性要求高的地方有所作为</li>
+<li>对数据准确性要求高，速度可以相对较慢的，可以选用TCP</li>
+</ul>
+<h3 id="TCP可靠性原理"><a href="#TCP可靠性原理" class="headerlink" title="TCP可靠性原理"></a>TCP可靠性原理</h3><ul>
+<li><p>checksum：端到端校验和</p>
+</li>
+<li><p>停止等待协议/超时重传：发送一个分组，收到确认后再发送下一个。超过一定时间没有收到就重发。</p>
+</li>
+<li><p>ARQ（自动重传请求）：发送窗口可以连续发，接收方累计确认，对按序到达的最后一个分组发送确认。BACK-N。</p>
+</li>
+<li><p>TCP 流量控制：用滑动窗口来控制发送方的速率。</p>
+</li>
+</ul>
+<h3 id="TCP拥塞控制方式"><a href="#TCP拥塞控制方式" class="headerlink" title="TCP拥塞控制方式"></a>TCP拥塞控制方式</h3><p><strong>原理</strong></p>
+<p>将丢包视为出现拥塞，采取缓慢探测的方式，逐渐增大拥塞窗口，当出现丢包时，将拥塞窗口减小</p>
+<p>只要网络中没有出现拥塞，拥塞窗口的值就可以再增大一些，以便把更多的数据包发送出去，但只要网络出现拥塞，拥塞窗口的值就应该减小一些，以减少注入到网络中的数据包数。</p>
+<ol>
+<li>慢启动：发送窗口 指数增长</li>
+<li>拥塞避免：发送窗口线性增长</li>
+<li>快重传：要求接收方在收到一个失序的报文段后就立即发出重复确认</li>
+<li>快恢复：将慢启动阈值修改为当前拥塞窗口值的一半，同时拥塞窗口值等于慢启动阈值，然后进入拥塞避免阶段，</li>
+</ol>
+<p><img src="http://yhsilver.xyz/archive/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%EF%BC%88%E4%B8%80%EF%BC%89/910f613f-514f-4534-87dd-9b4699d59d31.png" alt="img"></p>
+<h3 id="TCP粘包"><a href="#TCP粘包" class="headerlink" title="TCP粘包"></a>TCP粘包</h3><p>TCP粘包就是指发送方发送的若干包数据到达接收方时粘成了一包，从接收缓冲区来看，后一包数据的头紧接着前一包数据的尾，发送端为了将多个发往接收端的包，更加高效的的发给接收端，于是采用了优化算法（Nagle算法），将多次间隔较小、数据量较小的数据，合并成一个数据量大的数据块，然后进行封包。</p>
+<p>接收方原因TCP接收到数据包时，并不会马上交到应用层进行处理，或者说应用层并不会立即处理。实际上，TCP将接收到的数据包保存在接收缓存里，然后应用程序主动从缓存读取收到的分组。这样一来，<strong>如果TCP接收数据包到缓存的速度大于应用程序从缓存中读取数据包的速度，多个包就会被缓存，应用程序就有可能读取到多个首尾相接粘到一起的包。</strong></p>
+<p><strong>解决方法：</strong></p>
+<ol>
+<li>对于发送方造成的粘包问题，可以通过关闭Nagle算法来解决。</li>
+<li>格式化数据：每条数据有固定的格式（开始符，结束符）。</li>
+<li>发送长度：发送每条数据时，将数据的长度一并发送。</li>
+</ol>
+<h2 id="DNS"><a href="#DNS" class="headerlink" title="DNS"></a>DNS</h2><h3 id="DNS查询"><a href="#DNS查询" class="headerlink" title="DNS查询"></a>DNS查询</h3><p>DNS：Domain Name System，域名系统，是互联网使用的命名系统，用来便于把人们使用的机器名字转换为IP地址。属于应用层协议。域名服务主要是基于UDP实现的，服务器端口号为53。</p>
+<ul>
+<li>递归：本机向本地域名服务器发出一次查询请求，就静待最终的结果。如果本地域名服务器无法解析，自己会以DNS客户机的身份向其它域名服务器查询，直到得到最终的IP地址告诉本机。</li>
+<li>迭代：本地域名服务器向根域名服务器查询，根域名服务器告诉它下一步到哪里去查询，然后它再去查，每次它都是以客户机的身份去各个服务器查询。</li>
+</ul>
+<p><img src="http://yhsilver.xyz/archive/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%EF%BC%88%E4%B8%80%EF%BC%89/20190812162258440.png" alt="在这里插入图片描述"></p>
+<h3 id="DNS投毒"><a href="#DNS投毒" class="headerlink" title="DNS投毒"></a>DNS投毒</h3><p><strong>攻击者通过精心构造DNS报文，在LDNS查询某个域名时，冒充真正的权威DNS做出回应，使得LDNS得到一个虚假响应。如果LDNS接受了这个虚假响应并写入缓存，LDNS就会中毒。</strong></p>
+<p>查询类似<a target="_blank" rel="noopener" href="http://1.foo.com/">http://1.foo.com</a>、<a target="_blank" rel="noopener" href="http://2.foo.com/">http://2.foo.com</a>、<a target="_blank" rel="noopener" href="http://3.foo.com/">http://3.foo.com</a>等等这些大概率就完全不存在的域名，由于LDNS并没有这些域名的缓存，就会发起查询。攻击者伪造权威DNS的应答报文给local DNS </p>
+<p>这个响应的意思是：“我不知道<a target="_blank" rel="noopener" href="http://83.foo.com/">http://83.foo.com</a>的A记录，你去问问<a target="_blank" rel="noopener" href="http://www.foo.com/">http://www.foo.com</a>吧，它负责<a target="_blank" rel="noopener" href="http://foo.com/">http://foo.com</a>这个域，对了，他的IP是6.6.6.6”。</p>
+<p>这样的攻击，不仅污染了<a target="_blank" rel="noopener" href="http://www.foo.com/">http://www.foo.com</a>，还污染了整个<a target="_blank" rel="noopener" href="http://foo.com/">http://foo.com</a>域，因为之后所有此域下的解析，在缓存有效期内，都会去问6.6.6.6，也即问到攻击者那里！（缓存失效后可以再次发起攻击）</p>
+<p><strong>解决方法</strong>：本地与权威服务器之间加密，提供签名。 刷新服务器缓存，缩短缓存存在时间。随机QID,随机源端口</p>
+<h2 id="连接网络的整体过程"><a href="#连接网络的整体过程" class="headerlink" title="连接网络的整体过程"></a>连接网络的整体过程</h2><h3 id="一、DHCP-配置主机信息"><a href="#一、DHCP-配置主机信息" class="headerlink" title="一、DHCP 配置主机信息"></a><strong>一、DHCP 配置主机信息</strong></h3><p>如果一开始没有源IP，开始<strong>申请IP</strong></p>
+<ol>
+<li>主机生成一个 DHCP 请求报文，并将这个报文放入具有目的端口 67 和源端口 68 的 UDP 报文段中。</li>
+<li>该报文段则被放入在一个具有广播 IP 目的地址(255.255.255.255) 和源 IP 地址（0.0.0.0）的 IP 数据报中。</li>
+<li>该数据报则被放置在 MAC 帧中，该帧具有目的地址 FF:FF:FF:FF:FF:FF，将广播到与交换机连接的所有设备。</li>
+<li>与交换机相连的默认网关路由器接收到了这个广播帧，进行解析，提取出IP数据报，发现目的IP是广播IP，就交给传输层，传输层又提取出 DHCP 请求交给应用层， DHCP 服务器就收到了该 DHCP 请求。</li>
+<li>DHCP 服务器为此生成一个 DHCP ACK 报文，主要包含：IP 地址、DNS 服务器的 IP 地址、默认网关路由器的 IP 地址和子网掩码</li>
+<li>DHCP ACK以太网帧由默认网关路由器发送给交换机，交换机根据转发表转发回给我的主机</li>
+<li>主机收到该帧之后再从链路层到应用层，层层提取，最后得到<strong>自己的IP、DNS服务器IP、默认网关路由器IP</strong>，进行配置，我就有了IP。</li>
+</ol>
+<h3 id="二、ARP-解析-MAC-地址-（走出局域网）"><a href="#二、ARP-解析-MAC-地址-（走出局域网）" class="headerlink" title="二、ARP 解析 MAC 地址 （走出局域网）"></a><strong>二、ARP 解析 MAC 地址 （走出局域网）</strong></h3><p>DHCP 过程只知道网关路由器的 IP 地址，为了<strong>获取网关路由器的 MAC 地址</strong>，需要使用 ARP 协议。</p>
+<pre><code>  8. 主机生成一个 ARP 查询报文，目的 IP 是**默认网关路由器**，
+  9. 默认网关路由器接收到了这个帧，经过层层提取得到 ARP 报文，发现其中的目的 IP 跟他自己某个接口的 IP 匹配，就发送回去一个 ARP 应答报文给主机，这里包含他自己的 MAC
+</code></pre>
+<h3 id="三、DNS-解析域名"><a href="#三、DNS-解析域名" class="headerlink" title="三、DNS 解析域名"></a><strong>三、DNS 解析域名</strong></h3><p>知道了网关路由器的 MAC 地址之后，就可以继续 <strong>DNS 的解析</strong>过程了。</p>
+<pre><code>  10. 主机生成DNS查询报文，包含目的域名和DNS服务器目的端口：53
+  11. 网关路由器接收到包含 DNS 查询报文的以太网帧后，抽取出 IP 数据报，并根据转发表决定该 IP 数据报应该转发的路由器。
+  12. 因为路由器具有内部网关协议（RIP、OSPF）和外部网关协议（BGP）这两种路由选择协议，因此路由表中已经配置了网关路由器到达 DNS 服务器的路由表项。
+  13. DNS 服务器接收到帧后，层层提取出 DNS 查询报文，并在 DNS 数据库中查找待解析域名对应的 IP，找到之后发送 DNS 应答报文
+</code></pre>
+<h3 id="四、-HTTP-请求页面"><a href="#四、-HTTP-请求页面" class="headerlink" title="四、 HTTP 请求页面"></a>四、 HTTP 请求页面</h3><p>有了 HTTP 服务器的 IP 地址之后，主机就能够生成 TCP 套接字，该套接字将用于向 Web 服务器<strong>发送 HTTP GET 报文</strong>。</p>
+<ol start="14">
+<li><p>建立TCP连接</p>
+</li>
+<li><p>发送HTTP 报文，服务器收到请求，响应，浏览器 抽取web页面渲染显示。</p>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/TCP/" rel="tag"><i class="fa fa-tag"></i> TCP</a>
+              <a href="/tags/OSI/" rel="tag"><i class="fa fa-tag"></i> OSI</a>
+              <a href="/tags/DNS/" rel="tag"><i class="fa fa-tag"></i> DNS</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/archive/%E6%95%B0%E6%8D%AE%E5%BA%93-%E7%B4%A2%E5%BC%95&%E6%9F%A5%E8%AF%A2/" rel="prev" title="数据库----SQL查询">
+      <i class="fa fa-chevron-left"></i> 数据库----SQL查询
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#OSI-amp-TCP-IP%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">OSI &amp; TCP&#x2F;IP模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-IP"><span class="nav-number">2.</span> <span class="nav-text">TCP&#x2F;IP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP%E6%8F%A1%E6%89%8B-%E6%8C%A5%E6%89%8B"><span class="nav-number">2.1.</span> <span class="nav-text">TCP握手&#x2F;挥手</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP-UDP-%E5%8C%BA%E5%88%AB"><span class="nav-number">2.2.</span> <span class="nav-text">TCP UDP 区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP%E5%8F%AF%E9%9D%A0%E6%80%A7%E5%8E%9F%E7%90%86"><span class="nav-number">2.3.</span> <span class="nav-text">TCP可靠性原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E6%96%B9%E5%BC%8F"><span class="nav-number">2.4.</span> <span class="nav-text">TCP拥塞控制方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP%E7%B2%98%E5%8C%85"><span class="nav-number">2.5.</span> <span class="nav-text">TCP粘包</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DNS"><span class="nav-number">3.</span> <span class="nav-text">DNS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#DNS%E6%9F%A5%E8%AF%A2"><span class="nav-number">3.1.</span> <span class="nav-text">DNS查询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DNS%E6%8A%95%E6%AF%92"><span class="nav-number">3.2.</span> <span class="nav-text">DNS投毒</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9E%E6%8E%A5%E7%BD%91%E7%BB%9C%E7%9A%84%E6%95%B4%E4%BD%93%E8%BF%87%E7%A8%8B"><span class="nav-number">4.</span> <span class="nav-text">连接网络的整体过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E3%80%81DHCP-%E9%85%8D%E7%BD%AE%E4%B8%BB%E6%9C%BA%E4%BF%A1%E6%81%AF"><span class="nav-number">4.1.</span> <span class="nav-text">一、DHCP 配置主机信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E3%80%81ARP-%E8%A7%A3%E6%9E%90-MAC-%E5%9C%B0%E5%9D%80-%EF%BC%88%E8%B5%B0%E5%87%BA%E5%B1%80%E5%9F%9F%E7%BD%91%EF%BC%89"><span class="nav-number">4.2.</span> <span class="nav-text">二、ARP 解析 MAC 地址 （走出局域网）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E3%80%81DNS-%E8%A7%A3%E6%9E%90%E5%9F%9F%E5%90%8D"><span class="nav-number">4.3.</span> <span class="nav-text">三、DNS 解析域名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9B%E3%80%81-HTTP-%E8%AF%B7%E6%B1%82%E9%A1%B5%E9%9D%A2"><span class="nav-number">4.4.</span> <span class="nav-text">四、 HTTP 请求页面</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yanhh"
+      src="/images/myAvatar.jpg">
+  <p class="site-author-name" itemprop="name">yanhh</p>
+  <div class="site-description" itemprop="description">好好学习，天天向上！</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/YHsilver" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;YHsilver" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://121.36.254.170/" title="Uni C → http:&#x2F;&#x2F;121.36.254.170" rel="noopener" target="_blank"><i class="fa fa-link fa-fw"></i>Uni C</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">yanhua</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="https://cdn.bootcss.com/velocity/1.2.1/velocity.min.js"></script>
+  <script src="https://cdn.bootcss.com/velocity/1.2.1/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
