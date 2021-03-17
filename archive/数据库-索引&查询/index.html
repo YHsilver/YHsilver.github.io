@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.ico">
+  <link rel="mask-icon" href="/images/favicon.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.1/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yhsilver.xyz","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Inroduction to database index and sql query with optimization">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据库----SQL查询">
+<meta property="og:url" content="http://yhsilver.xyz/archive/%E6%95%B0%E6%8D%AE%E5%BA%93-%E7%B4%A2%E5%BC%95&%E6%9F%A5%E8%AF%A2/index.html">
+<meta property="og:site_name" content="YNotes">
+<meta property="og:description" content="Inroduction to database index and sql query with optimization">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yhsilver.xyz/archive/%E6%95%B0%E6%8D%AE%E5%BA%93-%E7%B4%A2%E5%BC%95&%E6%9F%A5%E8%AF%A2/33576849-9275-47bb-ada7-8ded5f5e7c73.png">
+<meta property="article:published_time" content="2021-03-17T14:21:58.000Z">
+<meta property="article:modified_time" content="2021-03-17T15:01:01.165Z">
+<meta property="article:author" content="yanhh">
+<meta property="article:tag" content="db">
+<meta property="article:tag" content="sql">
+<meta property="article:tag" content="Index">
+<meta property="article:tag" content="Data Stucture">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yhsilver.xyz/archive/%E6%95%B0%E6%8D%AE%E5%BA%93-%E7%B4%A2%E5%BC%95&%E6%9F%A5%E8%AF%A2/33576849-9275-47bb-ada7-8ded5f5e7c73.png">
+
+<link rel="canonical" href="http://yhsilver.xyz/archive/%E6%95%B0%E6%8D%AE%E5%BA%93-%E7%B4%A2%E5%BC%95&%E6%9F%A5%E8%AF%A2/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>数据库----SQL查询 | YNotes</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">YNotes</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">13</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="th fa-fw"></i>分类<span class="badge">3</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">8</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/YHsilver" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yhsilver.xyz/archive/%E6%95%B0%E6%8D%AE%E5%BA%93-%E7%B4%A2%E5%BC%95&%E6%9F%A5%E8%AF%A2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/myAvatar.jpg">
+      <meta itemprop="name" content="yanhh">
+      <meta itemprop="description" content="好好学习，天天向上！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="YNotes">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数据库----SQL查询
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-17 22:21:58 / 修改时间：23:01:01" itemprop="dateCreated datePublished" datetime="2021-03-17T22:21:58+08:00">2021-03-17</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">Inroduction to database index and sql query with optimization</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h1><h3 id="数据结构："><a href="#数据结构：" class="headerlink" title="数据结构："></a>数据结构：</h3><ol>
+<li><p>B+ Tree </p>
+<p><strong>减少磁盘IO的次数</strong>就必须要压缩树的高度。解决元素<strong>遍历的效率</strong>低下的问题。</p>
+<p><img src="http://yhsilver.xyz/archive/%E6%95%B0%E6%8D%AE%E5%BA%93-%E7%B4%A2%E5%BC%95&%E6%9F%A5%E8%AF%A2/33576849-9275-47bb-ada7-8ded5f5e7c73.png" alt="img"></p>
+<ul>
+<li><p><strong>与B 树相比</strong></p>
+<p>B+ Tree 是基于 B Tree 和叶子节点顺序访问指针进行实现，它具有 B Tree 的平衡性，并且通过顺序访问指针来提高区间查询的性能。<strong>查询性能高</strong></p>
+<p>如果经常访问的数据离根节点很近，而B树的非叶子节点本身存有关键字的具体数据或者其数据的地址，所以这种数据检索的时候会要比B+树快</p>
+</li>
+<li><p><strong>与红黑树的比较</strong></p>
+<p>红黑树等平衡树也可以用来实现索引，但是文件系统及数据库系统普遍采用 B+ Tree 作为索引结构，这是因为使用 <strong>B+ 树访问磁盘数据有更高的性能。</strong></p>
+<p>B+ 树有更低的树高：红黑树是二叉树。B+ 树相对于红黑树有更低的树高，进行寻道的次数与树高成正比，</p>
+</li>
+</ul>
+</li>
+<li><p>hash</p>
+<p>哈希索引能以 O(1) 时间进行查找，但是失去了有序性：</p>
+<ul>
+<li><p>无法用于排序与分组；</p>
+</li>
+<li><p>只支持精确查找，无法用于部分查找和范围查找。</p>
+</li>
+<li><p>索引可以提高查询速度，但会消耗磁盘空间</p>
+</li>
+<li><p>使用索引时的注意点</p>
+<ul>
+<li>多使用在where查询条件的情况下</li>
+<li>数据唯一性较差的字段不需要</li>
+<li>频繁更新的字段不需要</li>
+<li>数据量较少不需要</li>
+<li>有NULL值时不能使用</li>
+</ul>
+</li>
+<li><p>索引类型</p>
+<p>稠密索引和非稠密索引：是否每一行都对应一个索引</p>
+<p>聚集索引和非聚集索引：索引的排列方式是否跟数据库文件一样</p>
+</li>
+</ul>
+<p>InnoDB的“自适应哈希索引”能在当某些值被频繁访问时，在B+ Tree索引的基础上再建立一个索引</p>
+</li>
+</ol>
+<h3 id="索引的优化"><a href="#索引的优化" class="headerlink" title="索引的优化"></a>索引的优化</h3><ol>
+<li><p><strong>独立的列</strong>：在进行查询时，索引列不能是表达式的一部分，也不能是函数的参数，否则无法使用索引。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> actor_id <span class="keyword">FROM</span> sakila.actor <span class="keyword">WHERE</span> actor_id <span class="operator">+</span> <span class="number">1</span> <span class="operator">=</span> <span class="number">5</span>;</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>多列索引（复合）</strong>：在需要使用多个列作为条件进行查询时，使用多列索引比使用多个单列索引性能更好。例如下面的语句中，最好把 actor_id 和 film_id 设置为多列索引。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> film_id, actor_ id <span class="keyword">FROM</span> sakila.film_actor</span><br><span class="line"><span class="keyword">WHERE</span> actor_id <span class="operator">=</span> <span class="number">1</span> <span class="keyword">AND</span> film_id <span class="operator">=</span> <span class="number">1</span>;</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>索引列的顺序</strong>：让属性具有最多的不同性的索引列放在前面。比如姓名的多样性 &gt; 性别的多样性</p>
+</li>
+<li><p><strong>前缀索引</strong>：对于 BLOB、TEXT 和 VARCHAR 类型的列，必须使用前缀索引，只索引开始的部分字符。前缀长度的选取需要根据索引选择性来确定。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> x_test <span class="keyword">add</span> index(x_name(<span class="number">3</span>))</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h1 id="SQL查询"><a href="#SQL查询" class="headerlink" title="SQL查询"></a>SQL查询</h1><h3 id="基本语法"><a href="#基本语法" class="headerlink" title="基本语法"></a><strong>基本语法</strong></h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 统计各公司的男性平均年龄，并且仅保留平均年龄30岁以上的公司,按入职时间排前5</span></span><br><span class="line"> <span class="keyword">select</span> company, <span class="built_in">avg</span>(age)，<span class="type">time</span> <span class="keyword">from</span> table_1</span><br><span class="line"> <span class="keyword">where</span> sex <span class="operator">=</span> <span class="string">&#x27;M&#x27;</span></span><br><span class="line"> <span class="keyword">group</span> <span class="keyword">by</span> company</span><br><span class="line"> <span class="keyword">having</span> <span class="built_in">avg</span>(age)<span class="operator">&gt;</span><span class="number">30</span>;</span><br><span class="line"> <span class="keyword">order</span> <span class="keyword">by</span> <span class="type">time</span> des </span><br><span class="line"> limit <span class="number">5</span></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
+<h3 id="查询案例"><a href="#查询案例" class="headerlink" title="查询案例"></a><strong>查询案例</strong></h3>  <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">  <span class="comment">-- table_1中有id,age; table_2中有id，sex。想取出id,age,sex 三列信息</span></span><br><span class="line">  <span class="comment">-- 将table_1,table_2 根据主键id连接起来</span></span><br><span class="line">  <span class="keyword">select</span> a.id,a.age,b.sex <span class="keyword">from</span> </span><br><span class="line">  (<span class="keyword">select</span> id,age <span class="keyword">from</span> table_1) a <span class="comment">--将select之后的内容存为临时表a</span></span><br><span class="line">  <span class="keyword">join</span> </span><br><span class="line">  (<span class="keyword">select</span> id, sex <span class="keyword">from</span> table_2) b <span class="comment">--将select之后的内容存为临时表b</span></span><br><span class="line">  <span class="keyword">on</span> a.id <span class="operator">=</span> b.id</span><br><span class="line">  </span><br><span class="line">  <span class="comment">-- 统计各公司的男性平均年龄，并且仅保留平均年龄30岁以上的公司</span></span><br><span class="line">  <span class="keyword">select</span> company, <span class="built_in">avg</span>(age) <span class="keyword">from</span> table_1</span><br><span class="line">  <span class="keyword">where</span> sex <span class="operator">=</span> <span class="string">&#x27;M&#x27;</span></span><br><span class="line">  <span class="keyword">group</span> <span class="keyword">by</span> company</span><br><span class="line">  <span class="keyword">having</span> <span class="built_in">avg</span>(age)<span class="operator">&gt;</span><span class="number">30</span>;</span><br><span class="line">  </span><br><span class="line"> <span class="comment">--找出某日观看不同视频个数的前5名</span></span><br><span class="line"><span class="keyword">SELECT</span> user_id, differ_video</span><br><span class="line"><span class="keyword">FROM</span> </span><br><span class="line">(</span><br><span class="line">	<span class="keyword">SELECT</span> user_id, <span class="built_in">COUNT</span>(<span class="number">1</span>) <span class="keyword">AS</span> differ_video</span><br><span class="line">	<span class="keyword">FROM</span></span><br><span class="line">	(</span><br><span class="line">		<span class="keyword">SELECT</span> user_id, video_id</span><br><span class="line">		<span class="keyword">FROM</span></span><br><span class="line">		(</span><br><span class="line">			<span class="keyword">SELECT</span> <span class="operator">*</span> </span><br><span class="line">			<span class="keyword">FROM</span> user_video_log</span><br><span class="line">			<span class="keyword">WHERE</span> pt <span class="operator">=</span> <span class="string">&#x27;20200603&#x27;</span></span><br><span class="line">		) tmp</span><br><span class="line">		<span class="keyword">GROUP</span> <span class="keyword">BY</span> user_id, video_id</span><br><span class="line">	) tmp2</span><br><span class="line">	<span class="keyword">GROUP</span> <span class="keyword">BY</span> user_id</span><br><span class="line">) tmp3</span><br><span class="line">SORT <span class="keyword">BY</span> differ_video <span class="keyword">DESC</span></span><br><span class="line">LIMIT <span class="number">5</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="查询优化"><a href="#查询优化" class="headerlink" title="查询优化"></a><strong>查询优化</strong></h3><ol>
+<li><p><strong>减少请求的数据量</strong></p>
+<ul>
+<li>只返回必要的列：最好不要使用 SELECT * 语句。</li>
+<li>只返回必要的行：使用 LIMIT，WHERE 语句来限制返回的数据， </li>
+<li>缓存重复查询的数据：使用缓存可以避免在数据库中进行查询，特别在要查询的数据经常被重复查询时，缓存带来的查询性能提升将会是非常明显的</li>
+</ul>
+</li>
+<li><p><strong>覆盖索引</strong></p>
+<p><strong>尽量使查询的字段在索引上</strong>。举例分页查询优化</p>
+<ol>
+<li><strong>子查询法</strong></li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> c1,c2,cn... <span class="keyword">FROM</span> <span class="keyword">table</span> </span><br><span class="line"><span class="keyword">WHERE</span> id <span class="operator">&gt;=</span> (<span class="keyword">SELECT</span> id <span class="keyword">FROM</span> <span class="keyword">table</span> LIMIT <span class="number">20000</span>,<span class="number">1</span> )</span><br><span class="line">LIMIT <span class="number">10</span>;</span><br></pre></td></tr></table></figure>
+
+<p>原理：我们使用条件对id进行了筛选，在子查询中我们<strong>只查询了id这一个字段比</strong>起select * 或 select 多个字段 节省了大量的查询开销！</p>
+<ol start="2">
+<li><strong>使用JOIN</strong></li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">--优化前SQL:</span></span><br><span class="line"><span class="keyword">SELECT</span> c1,c2,cn... <span class="keyword">FROM</span> <span class="keyword">member</span> <span class="keyword">ORDER</span> <span class="keyword">BY</span> last_active LIMIT <span class="number">50</span>,<span class="number">5</span></span><br><span class="line"></span><br><span class="line"><span class="comment">--优化后SQL:</span></span><br><span class="line"><span class="keyword">SELECT</span> c1, c2, cn .. .</span><br><span class="line"><span class="keyword">FROM</span> <span class="keyword">member</span></span><br><span class="line"><span class="keyword">INNER</span> <span class="keyword">JOIN</span> (<span class="keyword">SELECT</span> member_id <span class="keyword">FROM</span> <span class="keyword">member</span> <span class="keyword">ORDER</span> <span class="keyword">BY</span> last_active LIMIT <span class="number">50</span>, <span class="number">5</span>)</span><br><span class="line"><span class="keyword">USING</span> (member_id)</span><br></pre></td></tr></table></figure>
+
+<p>分别在于，优化前的SQL需要更多I/O浪费，因为先读索引，再读数据，然后抛弃无需的行。而优化后的SQL(子查询那条)只读索引(Cover index)就可以了，然后通过member_id读取需要的列。（<strong>子查询只读取了索引member_id这一个字段</strong>）</p>
+</li>
+</ol>
+<blockquote>
+<p>参考  《高性能MySql》</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/db/" rel="tag"><i class="fa fa-tag"></i> db</a>
+              <a href="/tags/sql/" rel="tag"><i class="fa fa-tag"></i> sql</a>
+              <a href="/tags/Index/" rel="tag"><i class="fa fa-tag"></i> Index</a>
+              <a href="/tags/Data-Stucture/" rel="tag"><i class="fa fa-tag"></i> Data Stucture</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/archive/%E6%95%B0%E6%8D%AE%E5%BA%93-Mysql%E9%94%81/" rel="prev" title="数据库----Mysql锁">
+      <i class="fa fa-chevron-left"></i> 数据库----Mysql锁
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95"><span class="nav-number">1.</span> <span class="nav-text">索引</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%9A"><span class="nav-number">1.0.1.</span> <span class="nav-text">数据结构：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E7%9A%84%E4%BC%98%E5%8C%96"><span class="nav-number">1.0.2.</span> <span class="nav-text">索引的优化</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SQL%E6%9F%A5%E8%AF%A2"><span class="nav-number">2.</span> <span class="nav-text">SQL查询</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95"><span class="nav-number">2.0.1.</span> <span class="nav-text">基本语法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2%E6%A1%88%E4%BE%8B"><span class="nav-number">2.0.2.</span> <span class="nav-text">查询案例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96"><span class="nav-number">2.0.3.</span> <span class="nav-text">查询优化</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yanhh"
+      src="/images/myAvatar.jpg">
+  <p class="site-author-name" itemprop="name">yanhh</p>
+  <div class="site-description" itemprop="description">好好学习，天天向上！</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/YHsilver" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;YHsilver" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://121.36.254.170/" title="Uni C → http:&#x2F;&#x2F;121.36.254.170" rel="noopener" target="_blank"><i class="fa fa-link fa-fw"></i>Uni C</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">yanhua</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="https://cdn.bootcss.com/velocity/1.2.1/velocity.min.js"></script>
+  <script src="https://cdn.bootcss.com/velocity/1.2.1/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
