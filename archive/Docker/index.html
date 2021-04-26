@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.ico">
+  <link rel="mask-icon" href="/images/favicon.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.1/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yhsilver.xyz","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Docker介绍及使用Docker部署项目">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Docker部署Spring Boot项目（一）">
+<meta property="og:url" content="http://yhsilver.xyz/archive/Docker/index.html">
+<meta property="og:site_name" content="YNotes">
+<meta property="og:description" content="Docker介绍及使用Docker部署项目">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yhsilver.xyz/archive/Docker/011f3ef6-d824-4d43-8b2c-36dab8eaaa72-1-1619421063835.png">
+<meta property="og:image" content="http://yhsilver.xyz/archive/Docker/be608a77-7b7f-4f8e-87cc-f2237270bf69.png">
+<meta property="og:image" content="http://yhsilver.xyz/archive/Docker/docker-filesystems-busyboxrw.png">
+<meta property="og:image" content="http://yhsilver.xyz/archive/Docker/image-20210426145427989.png">
+<meta property="og:image" content="http://yhsilver.xyz/archive/Docker/image-20210426145600921-1619421156936.png">
+<meta property="og:image" content="http://yhsilver.xyz/archive/Docker/inner-outer-loop.png">
+<meta property="article:published_time" content="2021-04-26T07:04:44.000Z">
+<meta property="article:modified_time" content="2021-04-26T07:12:51.163Z">
+<meta property="article:author" content="yanhh">
+<meta property="article:tag" content="Docker">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yhsilver.xyz/archive/Docker/011f3ef6-d824-4d43-8b2c-36dab8eaaa72-1-1619421063835.png">
+
+<link rel="canonical" href="http://yhsilver.xyz/archive/Docker/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>使用Docker部署Spring Boot项目（一） | YNotes</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">YNotes</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">17</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="th fa-fw"></i>分类<span class="badge">5</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">10</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/YHsilver" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yhsilver.xyz/archive/Docker/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/myAvatar.jpg">
+      <meta itemprop="name" content="yanhh">
+      <meta itemprop="description" content="好好学习，天天向上！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="YNotes">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用Docker部署Spring Boot项目（一）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-04-26 15:04:44 / 修改时间：15:12:51" itemprop="dateCreated datePublished" datetime="2021-04-26T15:04:44+08:00">2021-04-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">项目实践</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">Docker介绍及使用Docker部署项目</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>Docker是什么就不用解释了，个人理解为就是一个打包代码依赖的工具</p>
+</blockquote>
+<h3 id="使用Docker的好处"><a href="#使用Docker的好处" class="headerlink" title="使用Docker的好处"></a>使用Docker的好处</h3><ol>
+<li><p><strong>一处配置，多处使用。</strong></p>
+<p>由于不同的机器有不同的操作系统，以及不同的库和组件，在将一个应用部署到多台机器上需要进行大量的环境配置操作。</p>
+<p>Docker 主要解决环境配置问题，它是一种虚拟化技术，对进程进行隔离，被隔离的进程独立于宿主操作系统和其它隔离的进程。使用 Docker 可以不修改应用程序代码，不需要开发人员学习特定环境下的技术，就能够将现有的应用程序部署在其它机器上。在开发中经常有依赖问题，比如jdk版本，系统环境等，而使用Docker构建时会打包所有的依赖。</p>
+</li>
+<li><p><strong>环境隔离</strong></p>
+<p>不管是开发还是生产，往往我们一台机器上可能需要跑多个服务，而服务各自需要的依赖配置不尽相同，假如说两个应用需要使用同一个依赖，或者两个应用需要的依赖之间会有一些冲突，这个时候就很容易出现问题了。所以同一台服务器上不同应用提供的不同服务，最好还是将其隔离起来。而容器在这方面有天生的优势，每一个容器就是一个隔离的环境，你对容器内部提供服务的要求，容器可以自依赖的全部提供。这种高内聚的表现可以实现快速的分离有问题的服务，在一些复杂系统中能实现快速排错和及时处理。(当然需要说明的是，这个隔离性只是相对于服务器比较的，虚机技术要拥有更好的隔离性)</p>
+<img src="http://yhsilver.xyz/archive/Docker/011f3ef6-d824-4d43-8b2c-36dab8eaaa72-1-1619421063835.png" alt="011f3ef6-d824-4d43-8b2c-36dab8eaaa72-1" style="zoom:50%;"></li>
+<li><p><strong>成本低</strong></p>
+<p>在容器出现之前，我们往往构筑一个应用就需要一台新的服务器或者一台虚机。服务器的购置成本和运维成本都很高，而虚机需要占用很多不必要的资源。相比之下，容器技术就小巧轻便的多，只需要给一个容器内部构建应用需要的依赖就可以了，这也是容器技术发展迅速的最主要原因。</p>
+<img src="http://yhsilver.xyz/archive/Docker/be608a77-7b7f-4f8e-87cc-f2237270bf69.png" alt="img" style="zoom:50%;"></li>
+</ol>
+<p>总之，<strong>Docker使开发高效且可预测</strong>。Docker消除了重复的，繁琐的配置任务，并在整个开发生命周期中用于快速，轻松和可移植的应用程序开发-桌面和云。Docker全面的端到端平台包括UI，CLI，API和安全性，它们经过精心设计可在整个应用程序交付生命周期中协同工作。</p>
+<h3 id="Docker的Image和Container"><a href="#Docker的Image和Container" class="headerlink" title="Docker的Image和Container"></a>Docker的Image和Container</h3><p>镜像是一种静态的结构，可以看成面向对象里面的类，而容器是镜像的一个实例。</p>
+<p>镜像包含着容器运行时所需要的代码以及其它组件，它是一种分层结构，每一层都是只读的（read-only layers）。构建镜像时，会一层一层构建，前一层是后一层的基础。镜像的这种分层存储结构很适合镜像的复用以及定制。</p>
+<p>构建容器时，通过在镜像的基础上添加一个可写层（writable layer），用来保存着容器运行过程中的修改。</p>
+<img src="http://yhsilver.xyz/archive/Docker/docker-filesystems-busyboxrw.png" alt="img" style="zoom: 67%;">
+
+
+
+<h3 id="Docker的主要操作"><a href="#Docker的主要操作" class="headerlink" title="Docker的主要操作"></a>Docker的主要操作</h3><h4 id="Build"><a href="#Build" class="headerlink" title="Build"></a>Build</h4><ul>
+<li>通过利用Docker Image来在Windows和Mac上有效开发自己的应用程序，最终部署到服务器。 </li>
+<li>可以与一些开发工具集成：Docker可与大多数所有开发工具一起使用，包括VS Code，CircleCI和GitHub。</li>
+<li>可将应用程序打包为可移植容器Image，以在从本地Kubernetes到AWS ECS，Azure ACI，Google GKS等的任何环境中一致地运行。</li>
+</ul>
+<h4 id="Share"><a href="#Share" class="headerlink" title="Share"></a>Share</h4><ul>
+<li>可以使用Docker Hub映像存储库中的Docker认证映像和官方映像，使用这些受信任的安全映像作为应用程序开发的基础。如maven，Java，Tomcat等都有官方镜像库</li>
+<li>通过与团队成员和其他开发人员合作并通过将映像轻松发布到Docker Hub进行创新。可以自己构建镜像传到Docker Hub，别人可直接下载运行。</li>
+<li>可以使用基于角色的访问控制来个性化开发人员对Image的访问，并通过Docker Hub审核日志深入了解活动历史记录。类似Git Hub开发管理。</li>
+</ul>
+<h4 id="Run"><a href="#Run" class="headerlink" title="Run"></a>Run</h4><ul>
+<li>轻松交付多个应用程序，可以在所有环境（包括设计，测试，登台和生产）（台式机或云原生环境）中以相同的方式运行。</li>
+<li>在独立的容器中以不同的语言分别部署应用程序。减少语言，库或框架之间发生冲突的风险。</li>
+<li>使用Docker Compose CLI的简单性和一个命令来加快开发速度，使用AWS ECS，Acure ACI和Google GKS在本地和云上启动应用程序。</li>
+</ul>
+<h3 id="Docker部署流程"><a href="#Docker部署流程" class="headerlink" title="Docker部署流程"></a>Docker部署流程</h3><p>有多种方法可以构建部署一个Spirng Boot项目的Docker</p>
+<ol>
+<li><p>jar包+docker build</p>
+<p>使用maven等工具将项目打包成一个.jar包，传到服务器，使用Docker构建</p>
+<ul>
+<li><p>首先将spring boot 项目打包成一个.jar包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn clean package</span><br></pre></td></tr></table></figure></li>
+<li><p>在jar包所在目录，创建Dockerfile文件</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#基于java8镜像（ps.下载很慢，可以用aliyun镜像）</span></span><br><span class="line"><span class="keyword">FROM</span> java：<span class="number">8</span>    </span><br><span class="line"></span><br><span class="line"><span class="comment">#将本地文件夹挂在到当前容器：VOLUME 指定了临时文件目录为/tmp。其效果是在主机 /var/lib/docker 目录下创建了一个临时文件，并链接到容器的/tmp。改步骤是可选的，如果涉及到文件系统的应用就很有必要了。/tmp目录用来持久化到 Docker 数据文件夹，因为 Spring Boot 使用的内嵌 Tomcat 容器默认使用/tmp作为工作目录 </span></span><br><span class="line"><span class="keyword">VOLUME</span><span class="bash"> /tmp		</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 项目的 jar 文件作为 &quot;app.jar&quot; 添加到容器的</span></span><br><span class="line"><span class="keyword">ADD</span><span class="bash"> eureka-discovery.jar app.jar   </span></span><br><span class="line"></span><br><span class="line">暴露的端口号</span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">9421</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#ENTRYPOINT 执行项目 app.jar。为了缩短 Tomcat 启动时间，添加一个系统属性指向 &quot;/dev/urandom&quot; 作为 Entropy Source</span></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="bash"> [<span class="string">&quot;java&quot;</span>,<span class="string">&quot;-Djava.security.egd=file:/dev/./urandom&quot;</span>,<span class="string">&quot;-jar&quot;</span>,<span class="string">&quot;/app.jar&quot;</span>]</span></span><br></pre></td></tr></table></figure></li>
+<li><p>Build Docker镜像</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build -t adweb&#x2F;eureka-discovery . </span><br></pre></td></tr></table></figure>
+
+<p>使用 <code>docker images</code>可查看已build的镜像</p>
+<img src="http://yhsilver.xyz/archive/Docker/image-20210426145427989.png" alt="image-20210426145427989"></li>
+<li><p>启动镜像</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -p 9421:9421 -t adweb&#x2F;eureka-discovery</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://yhsilver.xyz/archive/Docker/image-20210426145600921-1619421156936.png" alt="image-20210426145600921"></p>
+</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ol>
+<li>需要自己构建.jar包，繁琐</li>
+<li>传送jar包到服务器也会受制于网络等因素，构建出来的项目一般都会很大</li>
+<li>每次修改都需要手动构建，传输</li>
+</ol>
+</li>
+<li><p>使用git， 模拟CI/CD流水线</p>
+<p>将代码托管到git仓库，服务器pull代码，运行脚本构建项目</p>
+<img src="http://yhsilver.xyz/archive/Docker/inner-outer-loop.png" alt="CI/CD inner and outer loop" style="zoom: 50%;">
+
+<ul>
+<li><p>首先在项目的每个模块下写好Dockerfile</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> maven:<span class="number">3.6</span>.<span class="number">3</span>-jdk-<span class="number">8</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># work dir</span></span><br><span class="line"><span class="keyword">ENV</span> MY_HOME=/usr/src/adweb/gateway/</span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> mkdir -p <span class="variable">$MY_HOME</span></span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> <span class="variable">$MY_HOME</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">ADD</span><span class="bash"> pom.xml <span class="variable">$MY_HOME</span>   <span class="comment">#添加pom.xml 到工作目录</span></span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> <span class="built_in">cd</span> <span class="variable">$MY_HOME</span> &amp;&amp; mvn dependency:resolve  <span class="comment">#下载maven依赖</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">ADD</span><span class="bash"> src <span class="variable">$MY_HOME</span>/src <span class="comment">#将源代码拷过去</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> <span class="built_in">cd</span> <span class="variable">$MY_HOME</span> &amp;&amp; mvn clean -DskipTests=<span class="literal">true</span> package \ <span class="comment">#maven构建应用</span></span></span><br><span class="line">	&amp;&amp; mv target/*.jar ./app.jar  \ </span><br><span class="line">	&amp;&amp; chmod <span class="number">500</span> *.jar</span><br><span class="line"></span><br><span class="line"><span class="comment">#暴露的端口号</span></span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">9423</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#ENTRYPOINT 执行项目 app.jar。为了缩短 Tomcat 启动时间，添加一个系统属性指向 &quot;/dev/urandom&quot; 作为 Entropy Source</span></span><br><span class="line"> <span class="keyword">ENTRYPOINT</span><span class="bash"> [<span class="string">&quot;java&quot;</span>,<span class="string">&quot;-Djava.security.egd=file:/dev/./urandom&quot;</span>,<span class="string">&quot;-jar&quot;</span>,<span class="string">&quot;app.jar&quot;</span>]</span></span><br></pre></td></tr></table></figure></li>
+<li><p>从git pull 代码</p>
+</li>
+<li><p>构建所有的Docker Images</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">cd eureka-discovery/</span><br><span class="line">docker build -t adweb/eureka-discovery .</span><br><span class="line"></span><br><span class="line">cd ../gateway/</span><br><span class="line">docker build -t adweb/gateway .</span><br><span class="line"></span><br><span class="line">cd ../welcome/</span><br><span class="line">docker build -t adweb/welcome .</span><br><span class="line"></span><br><span class="line">cd ../user-service/</span><br><span class="line">docker build -t adweb/user-service .</span><br><span class="line"></span><br><span class="line">cd ../</span><br></pre></td></tr></table></figure></li>
+<li><p>Run 所有构建好的Docker Images</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">docker run  --net=host -t  adweb/eureka-discovery &amp;</span><br><span class="line"></span><br><span class="line">docker run  --net=host -t adweb/gateway &amp;</span><br><span class="line"></span><br><span class="line">docker run --net=host -t adweb/welcome &amp;</span><br><span class="line"></span><br><span class="line">docker run  --net=host -t adweb/user-service &amp;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p><strong>优点：</strong>省去了手动构建，传输jar包的过程，直接pull代码进行构建</p>
+<p><strong>缺点：</strong>每个微服务需要手动build和run，服务之间的顺序也不可调控。下一阶段：使用k8s编排Docker，实现完全自动化。</p>
+</li>
+</ol>
+<p>参考资料</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://docs.docker.com/get-started/overview/">Docker官方指南</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Docker/" rel="tag"><i class="fa fa-tag"></i> Docker</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/archive/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%EF%BC%88%E4%B8%80%EF%BC%89/" rel="prev" title="计算机网络（一）">
+      <i class="fa fa-chevron-left"></i> 计算机网络（一）
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8Docker%E7%9A%84%E5%A5%BD%E5%A4%84"><span class="nav-number">1.</span> <span class="nav-text">使用Docker的好处</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Docker%E7%9A%84Image%E5%92%8CContainer"><span class="nav-number">2.</span> <span class="nav-text">Docker的Image和Container</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Docker%E7%9A%84%E4%B8%BB%E8%A6%81%E6%93%8D%E4%BD%9C"><span class="nav-number">3.</span> <span class="nav-text">Docker的主要操作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Build"><span class="nav-number">3.1.</span> <span class="nav-text">Build</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Share"><span class="nav-number">3.2.</span> <span class="nav-text">Share</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Run"><span class="nav-number">3.3.</span> <span class="nav-text">Run</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Docker%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B"><span class="nav-number">4.</span> <span class="nav-text">Docker部署流程</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yanhh"
+      src="/images/myAvatar.jpg">
+  <p class="site-author-name" itemprop="name">yanhh</p>
+  <div class="site-description" itemprop="description">好好学习，天天向上！</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/YHsilver" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;YHsilver" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://121.36.254.170/" title="Uni C → http:&#x2F;&#x2F;121.36.254.170" rel="noopener" target="_blank"><i class="fa fa-link fa-fw"></i>Uni C</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">yanhua</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="https://cdn.bootcss.com/velocity/1.2.1/velocity.min.js"></script>
+  <script src="https://cdn.bootcss.com/velocity/1.2.1/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
