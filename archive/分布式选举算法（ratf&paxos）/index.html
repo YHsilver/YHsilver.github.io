@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.ico">
+  <link rel="mask-icon" href="/images/favicon.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.1/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yhsilver.xyz","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="两种分布式一致性算法初步介绍--（选举Leader）.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分布式一致性算法">
+<meta property="og:url" content="http://yhsilver.xyz/archive/%E5%88%86%E5%B8%83%E5%BC%8F%E9%80%89%E4%B8%BE%E7%AE%97%E6%B3%95%EF%BC%88ratf&paxos%EF%BC%89/index.html">
+<meta property="og:site_name" content="YNotes">
+<meta property="og:description" content="两种分布式一致性算法初步介绍--（选举Leader）.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yhsilver.xyz/archive/%E5%88%86%E5%B8%83%E5%BC%8F%E9%80%89%E4%B8%BE%E7%AE%97%E6%B3%95%EF%BC%88ratf&paxos%EF%BC%89/image-20210527113020654.png">
+<meta property="article:published_time" content="2021-05-27T12:00:00.000Z">
+<meta property="article:modified_time" content="2021-05-27T12:07:02.055Z">
+<meta property="article:author" content="yanhh">
+<meta property="article:tag" content="分布式">
+<meta property="article:tag" content="raft">
+<meta property="article:tag" content="paxos">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yhsilver.xyz/archive/%E5%88%86%E5%B8%83%E5%BC%8F%E9%80%89%E4%B8%BE%E7%AE%97%E6%B3%95%EF%BC%88ratf&paxos%EF%BC%89/image-20210527113020654.png">
+
+<link rel="canonical" href="http://yhsilver.xyz/archive/%E5%88%86%E5%B8%83%E5%BC%8F%E9%80%89%E4%B8%BE%E7%AE%97%E6%B3%95%EF%BC%88ratf&paxos%EF%BC%89/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>分布式一致性算法 | YNotes</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">YNotes</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">21</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="th fa-fw"></i>分类<span class="badge">6</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">12</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/YHsilver" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yhsilver.xyz/archive/%E5%88%86%E5%B8%83%E5%BC%8F%E9%80%89%E4%B8%BE%E7%AE%97%E6%B3%95%EF%BC%88ratf&paxos%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/myAvatar.jpg">
+      <meta itemprop="name" content="yanhh">
+      <meta itemprop="description" content="好好学习，天天向上！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="YNotes">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          分布式一致性算法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-05-27 20:00:00 / 修改时间：20:07:02" itemprop="dateCreated datePublished" datetime="2021-05-27T20:00:00+08:00">2021-05-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">两种分布式一致性算法初步介绍--（选举Leader）.</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="分布式一致性算法"><a href="#分布式一致性算法" class="headerlink" title="分布式一致性算法"></a>分布式一致性算法</h2><h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>​    在分布式的场景中，为了实现系统的可用性，容错性，避免单机失效导致整个系统不可用， 一般会做数据多结点部署。 但数据一旦出现了多份，可能就会产生多点的数据不一致的问题。</p>
+<p>​    为了解决多份数据的一致性问题， 常常将其简化为<strong>多份状态机的一致性问题</strong>。 对于客户端发来的一系列指令， 只要能确保<strong>将指令以唯一确定的顺序发送给所有结点</strong>， 那么只要各个状态机的初始状态相同， 执行完所有指令后 (指令对状态机的影响必须是唯一确定的结果),  必然也会到达相同的状态， 实现一致性目标。 在多状态机一致性问题中， <strong>共识算法（ Consensus Algorithm)</strong> 的作用就是确保多份WAL（write-ahead-log）中包含顺序和内容完全一致的指令。WAL（write ahead log）就是数据写入前先记一条日志，类似会计记账，某账户消费20，然后再去修改账户余额，这样在余额本丢了的情况下，就可以用账户消费本重新算余额本。</p>
+<p>​    一般一个分布式的系统中会有一个Leader节点，负责接收客户端的请求，并负责将log通知给其他Follower。对于一个分布式系统，所有节点都是等价的（不存在固定的主备），所以如何持续选举一个Leader就成了一个关键问题，需要保证系统中必须存在且同一时刻只能有一个 Leader。本文主要介绍Leader 的选举。</p>
+<h3 id="Raft"><a href="#Raft" class="headerlink" title="Raft"></a>Raft</h3><h4 id="1-节点状态机"><a href="#1-节点状态机" class="headerlink" title="1. 节点状态机"></a>1. 节点状态机</h4><p>​    <img src="http://yhsilver.xyz/archive/%E5%88%86%E5%B8%83%E5%BC%8F%E9%80%89%E4%B8%BE%E7%AE%97%E6%B3%95%EF%BC%88ratf&paxos%EF%BC%89/image-20210527113020654.png" alt="image-20210527113020654" style="zoom: 33%;"></p>
+<h4 id="2-如何选举Leader"><a href="#2-如何选举Leader" class="headerlink" title="2. 如何选举Leader"></a>2. 如何选举Leader</h4><h5 id="请求投票的RPC主要参数"><a href="#请求投票的RPC主要参数" class="headerlink" title="请求投票的RPC主要参数"></a><strong>请求投票的RPC主要参数</strong></h5><p>如果<code>Follower</code>在一定时间内没有收到心跳请求，那么将会切换到<code>Candidate</code>状态，开始一轮新的选取，选举过程中会向集群中的<strong>所有节点发送请求投票的RPC：</strong><code>RequestVote</code>。如果<code>Leader</code>发生异常，那么基本上所有的<code>Follower</code>在同一时间切换为<code>Candidate</code>，并同时发出请求投票的RPC，那么就有可能导致选票被均衡的瓜分，从而需要重新发起新一轮的投票。为了避免选票被瓜分的问题，选举超时的是可以可以从一个固定的区间（例如<code>150-300</code>毫秒）随机选择。</p>
+<p>RPC Request：</p>
+<ul>
+<li><code>term</code>：当前候选人的任期号，发送时自增当前节点的term</li>
+<li><code>candidateId</code>：候选人的Id</li>
+<li><code>lastLogIndex</code>：候选人的最后日志条目索引值</li>
+<li><code>lastLogTerm</code>：候选人的最后日志条目的任期号</li>
+</ul>
+<p>其中<code>lastLogIndex</code>和<code>lastLogTerm</code>用来判断候选人的日志是否和服务器的日志一样新，如果候选人的日志都落后了，则说明还有未同步的数据，不能成为Leader，必须要至少一样新才能投票。</p>
+<p>RPC Response：</p>
+<ul>
+<li><code>term</code>：被请求节点的任期号</li>
+<li><code>voteGranted</code>：是否同意投票给候选人</li>
+</ul>
+<h5 id="节点收到RPC-Request"><a href="#节点收到RPC-Request" class="headerlink" title="节点收到RPC Request"></a>节点收到RPC Request</h5><ol>
+<li>判断当前的<code>Term</code>的和请求投票参数中的<code>Term</code>：<ul>
+<li>如果当前的<code>Term</code> &gt; 请求投票参数中的<code>Term</code>，那么拒绝投票（设置<code>voteGranted</code>为<code>false</code>），并<strong>返回当前的<code>Term</code></strong></li>
+<li>否则就更新当前<code>Term</code>为请求投票参数中的<code>Term</code>， 并将自身状态切换成<code>Follower</code></li>
+</ul>
+</li>
+<li>检测当前节点的投票状态：<ul>
+<li>如果当前的节点没有给任何其他节点投过票，或者是已经投过票给当前节点，那么继续检测日志的匹配状态（步骤3）</li>
+<li>否则（已经投过票给其他节点），那么拒绝投票（设置<code>voteGranted</code>为<code>false</code>）， 因为一个节点在一个任期内不能同时投票给多个节点</li>
+</ul>
+</li>
+<li>检测候选人的日志是否至少比当前节点的日志新，通过比较候选人的<code>lastLogIndex</code>和<code>lastLogTerm</code>和当前节点的日志，确保新选举出来的<code>Leader</code>不会丢失已经提交的日志：<ul>
+<li>如果日志匹配，即当前的任期和候选人的任期相同，且候选人的日志长度比当前的日志长度 <strong>或者</strong> 候选人的任期比比当前节点的任期高，那么就为候选人投票（设置<code>votedGranted</code>为<code>true</code>），并成为<code>Follower</code></li>
+<li>否则，那么就拒绝投票（设置<code>voteGranted</code>为<code>false</code>）</li>
+</ul>
+</li>
+</ol>
+<h5 id="Candidate收到RPC-Response"><a href="#Candidate收到RPC-Response" class="headerlink" title="Candidate收到RPC Response"></a>Candidate收到RPC Response</h5><ol>
+<li>检查响应的<code>Term</code>是否大于当前候选人的<code>Term</code>：<ul>
+<li>如果是，那么说明有其他节点开始了新一轮的选举或者是有新的<code>Leader</code>被选举出来，那么就把当前节点从<code>Candidate</code>切换为<code>Follower</code>状态，并更新当前节点的<code>Term</code></li>
+<li>否则，进行<strong>步骤2</strong></li>
+</ul>
+</li>
+<li>检查响应的<code>Term</code>是否和当前的节点的<code>Term</code>是否相等：<ul>
+<li>如果相等，那么说明在指定时间内收到了投票请求的响应，那么就进行<strong>步骤3</strong></li>
+<li>否则说明这是一个过期的投票请求响应，直接丢弃</li>
+</ul>
+</li>
+<li>检查响应是否同意投票：<ul>
+<li>如果同意，那么增加当前任期的同意投票节点数量，并检查同意投票的节点数量大于 <code>N/2+1</code>，那么就切换为<code>Leader</code></li>
+<li>如果不同意，可能是日志不匹配，因为<code>Leader</code>的日志至少要比<code>Follower</code>的日志新</li>
+</ul>
+</li>
+</ol>
+<h3 id="Paxos"><a href="#Paxos" class="headerlink" title="Paxos"></a>Paxos</h3><h4 id="三种角色"><a href="#三种角色" class="headerlink" title="三种角色"></a>三种角色</h4><ol>
+<li><strong>Proposer</strong> 提案者，在实际应用中可以理解为request的接受者，该角色接收到用户请求，并向集群提出提案，要求执行该request。</li>
+<li><strong>Acceptor</strong> 决策者，决策者接收到来自其他的proposer的提案，并按照一定的逻辑决定是否接收当前的提案，也就是是否接收request并准备执行request的角色。</li>
+<li><strong>Learner</strong> 学习者，能够从其他节点获取某个被共识之后的提案。</li>
+</ol>
+<h4 id="选举Leader的两个阶段"><a href="#选举Leader的两个阶段" class="headerlink" title="选举Leader的两个阶段"></a>选举Leader的两个阶段</h4><ol>
+<li><p><strong>准备阶段：Proposer生成提案</strong></p>
+<p>Proposer生成提案之前，应该先去<strong>学习</strong>已经被选定或者可能被选定的value，然后以该value作为自己提出的提案的value。如果没有value被选定，Proposer才可以自己决定value的值。这样才能达成一致。这个学习的阶段是通过一个<code>Prepare</code>请求实现的。</p>
+<ul>
+<li><p><strong>Proposer 发送 Prepare Request</strong></p>
+<p>Proposer 生成全局唯一且递增的提案 ID（Proposalid，以高位时间戳 + 低位机器 IP 可以保证唯一性和递增性），向 Paxos 集群的所有机器发送 PrepareRequest，这里无需携带提案内容，只携带 Proposalid 即可。</p>
+</li>
+<li><p><strong>Acceptor应答 Prepare Response</strong></p>
+<ul>
+<li>两个承诺：<ol>
+<li>不再应答 Proposalid <strong>小于等于</strong>当前请求的 <code>PrepareRequest</code></li>
+<li>不再应答 Proposalid <strong>小于</strong>当前请求的 <code>AcceptRequest</code>（下文提到）</li>
+</ol>
+</li>
+<li>一个应答：返回自己已经 Accept 过的提案中 ProposalID 最大的那个提案的内容，如果没有则返回空值<code>null</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>决策阶段：Acceptor接受提案</strong></p>
+<p>当一个Proposer 收到Prepare Response后，就决定了自己的<code>value</code>,接下来就是以该<code>value</code>作为自己提出的提案的<code>value</code></p>
+<ul>
+<li><p><strong>Proposer 发送 Accept Request</strong></p>
+<p>当 Proposer 收集到<strong>多数派应答</strong>的 <code>PrepareResponse</code>后，从中选择proposalid最大的提案内容，作为要发起 Accept 的提案，如果这个提案为空值，则可以自己随意决定提案内容。然后携带上当前 Proposalid，向 Paxos 集群的所有机器发送 AccpetRequest：<code>[PID, Value]</code>。</p>
+</li>
+<li><p><strong>Acceptor应答 Accept Response</strong></p>
+<p>Accpetor 收到 AccpetRequest 后，检查不违背自己之前作出的“两个承诺”情况下，持久化当前 Proposalid 和提案内容。</p>
+<p>一旦提案提交，接下来就会由接受者将自己的提交情况发给所有的学习者。</p>
+<p>最后 Proposer 收集到多数派应答的 AcceptResponse 后，形成决议。</p>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://ramcloud.atlassian.net/wiki/download/attachments/6586375/raft.pdf">In Search of an Understandable Consensus Algorithm</a> <em>(Raft Paper)</em></li>
+<li><a target="_blank" rel="noopener" href="https://qeesung.github.io/2020/04/14/Raft-%E7%AE%97%E6%B3%95%E4%B9%8B%E9%A2%86%E5%AF%BC%E4%BA%BA%E9%80%89%E4%B8%BE.html">Raft 算法之领导人选举</a> </li>
+<li><a target="_blank" rel="noopener" href="https://my.oschina.net/ittrueman/blog/1612492">分布式一致性选举算法-Paxos</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag"><i class="fa fa-tag"></i> 分布式</a>
+              <a href="/tags/raft/" rel="tag"><i class="fa fa-tag"></i> raft</a>
+              <a href="/tags/paxos/" rel="tag"><i class="fa fa-tag"></i> paxos</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/archive/Docker/" rel="prev" title="使用Docker部署Spring Boot项目（一）">
+      <i class="fa fa-chevron-left"></i> 使用Docker部署Spring Boot项目（一）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/archive/LSM-Tree/" rel="next" title="LSM-Tree 原理">
+      LSM-Tree 原理 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%80%E8%87%B4%E6%80%A7%E7%AE%97%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">分布式一致性算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Raft"><span class="nav-number">1.2.</span> <span class="nav-text">Raft</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E8%8A%82%E7%82%B9%E7%8A%B6%E6%80%81%E6%9C%BA"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. 节点状态机</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E5%A6%82%E4%BD%95%E9%80%89%E4%B8%BELeader"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. 如何选举Leader</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%AF%B7%E6%B1%82%E6%8A%95%E7%A5%A8%E7%9A%84RPC%E4%B8%BB%E8%A6%81%E5%8F%82%E6%95%B0"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">请求投票的RPC主要参数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%8A%82%E7%82%B9%E6%94%B6%E5%88%B0RPC-Request"><span class="nav-number">1.2.2.2.</span> <span class="nav-text">节点收到RPC Request</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Candidate%E6%94%B6%E5%88%B0RPC-Response"><span class="nav-number">1.2.2.3.</span> <span class="nav-text">Candidate收到RPC Response</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Paxos"><span class="nav-number">1.3.</span> <span class="nav-text">Paxos</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%89%E7%A7%8D%E8%A7%92%E8%89%B2"><span class="nav-number">1.3.1.</span> <span class="nav-text">三种角色</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%80%89%E4%B8%BELeader%E7%9A%84%E4%B8%A4%E4%B8%AA%E9%98%B6%E6%AE%B5"><span class="nav-number">1.3.2.</span> <span class="nav-text">选举Leader的两个阶段</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">1.4.</span> <span class="nav-text">参考资料</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yanhh"
+      src="/images/myAvatar.jpg">
+  <p class="site-author-name" itemprop="name">yanhh</p>
+  <div class="site-description" itemprop="description">好好学习，天天向上！</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/YHsilver" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;YHsilver" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://121.36.254.170/" title="Uni C → http:&#x2F;&#x2F;121.36.254.170" rel="noopener" target="_blank"><i class="fa fa-link fa-fw"></i>Uni C</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">yanhua</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="https://cdn.bootcss.com/velocity/1.2.1/velocity.min.js"></script>
+  <script src="https://cdn.bootcss.com/velocity/1.2.1/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
