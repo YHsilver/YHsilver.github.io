@@ -1,0 +1,227 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>事务（一）：本地事务 | Asher Yan's Blog</title><meta name="keywords" content="数据库,MySQL,事务"><meta name="author" content="Asher Yan"><meta name="copyright" content="Asher Yan"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="什么是事务事务处理几乎在每一个信息系统中都会涉及，它存在的意义是为了保证系统中所有的数据都是符合期望的，且相互关联的数据之间不会产生矛盾，即数据状态的一致性（Consistency）。 按照数据库的经典理论，要达成这个目标，需要三方面共同努力来保障。  原子性（Atomic）：在同一项业务处理过程中，事务保证了对多个数据的修改，要么同时成功，要么同时被撤销。 隔离性（Isolation）：在不同的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="事务（一）：本地事务">
+<meta property="og:url" content="https://blog.ashery.cn/posts/42434.html">
+<meta property="og:site_name" content="Asher Yan&#39;s Blog">
+<meta property="og:description" content="什么是事务事务处理几乎在每一个信息系统中都会涉及，它存在的意义是为了保证系统中所有的数据都是符合期望的，且相互关联的数据之间不会产生矛盾，即数据状态的一致性（Consistency）。 按照数据库的经典理论，要达成这个目标，需要三方面共同努力来保障。  原子性（Atomic）：在同一项业务处理过程中，事务保证了对多个数据的修改，要么同时成功，要么同时被撤销。 隔离性（Isolation）：在不同的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://images.ashery.cn/img/6378dcc116f2c2beb17e3666.jpg">
+<meta property="article:published_time" content="2022-11-19T14:30:54.000Z">
+<meta property="article:modified_time" content="2023-04-19T16:32:13.644Z">
+<meta property="article:author" content="Asher Yan">
+<meta property="article:tag" content="数据库">
+<meta property="article:tag" content="MySQL">
+<meta property="article:tag" content="事务">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://images.ashery.cn/img/6378dcc116f2c2beb17e3666.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://blog.ashery.cn/posts/42434"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":50,"languages":{"author":"作者: Asher Yan","link":"链接: ","source":"来源: Asher Yan's Blog","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '事务（一）：本地事务',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-04-20 00:32:13'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><script data-pace-options='{ "ajax":true, "document":true, "eventLag":true  }' src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/CodeByZach/pace@1.2.4/themes/blue/pace-theme-minimal.css"><meta name="generator" content="Hexo 6.2.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="http://images.ashery.cn/img/202304202309024.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">13</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">14</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://images.ashery.cn/img/6378dcc116f2c2beb17e3666.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">Asher Yan's Blog</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">事务（一）：本地事务</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-11-19T14:30:54.000Z" title="发表于 2022-11-19 22:30:54">2022-11-19</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-04-19T16:32:13.644Z" title="更新于 2023-04-20 00:32:13">2023-04-20</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>9分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="事务（一）：本地事务"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="什么是事务"><a href="#什么是事务" class="headerlink" title="什么是事务"></a>什么是事务</h1><p>事务处理几乎在每一个信息系统中都会涉及，它存在的意义是为了<strong>保证系统中所有的数据都是符合期望的，且相互关联的数据之间不会产生矛盾，即数据状态的一致性（Consistency）</strong>。</p>
+<p>按照数据库的经典理论，要达成这个目标，需要三方面共同努力来保障。</p>
+<ul>
+<li><strong>原子性</strong>（<strong>A</strong>tomic）：在同一项业务处理过程中，事务保证了对多个数据的修改，要么同时成功，要么同时被撤销。</li>
+<li><strong>隔离性</strong>（<strong>I</strong>solation）：在不同的业务处理过程中，事务保证了各自业务正在读、写的数据互相独立，不会彼此影响。</li>
+<li><strong>持久性</strong>（<strong>D</strong>urability）：事务应当保证所有成功被提交的数据修改都能够正确地被持久化，不丢失数据。</li>
+</ul>
+<p>上述特性被称为事务的ACID特性，这也是我比较赞同的一种解释，A、I、D 是手段，C 是目的。</p>
+<hr>
+<h1 id="本地事务"><a href="#本地事务" class="headerlink" title="本地事务"></a>本地事务</h1><p>本地事务是最基础的一种事务解决方案，只适用于<strong>单个服务使用单个数据源</strong>的场景。从应用角度看，它是直接<strong>依赖于数据源本身提供的事务能力</strong>来工作的，在程序代码层面，最多只能对事务接口（start、commit、abort）做一层标准化的包装（如 JDBC 接口），并不能深入参与到事务的运作过程当中，事务的开启、终止、提交、回滚、嵌套、设置隔离级别，乃至与应用代码贴近的事务传播方式，全部都要依赖底层数据源的支持才能工作。</p>
+<p>本文主要介绍本地事务的实现。</p>
+<hr>
+<h1 id="事务实现"><a href="#事务实现" class="headerlink" title="事务实现"></a>事务实现</h1><p>这里以MySQL为例，看看通常是怎么实现ACID特性的，并不是MySQL的详细介绍。</p>
+<h2 id="实现原子性"><a href="#实现原子性" class="headerlink" title="实现原子性"></a><strong>实现原子性</strong></h2><p>MySQL通过<code>undo log</code>实现原子性。</p>
+<p>原子性需要保证对多条数据的操作要么全部写入成功，要么全部写入失败。但是有时会在写到一半的时候出现特殊情况导致不得不停止写入，比如执行过程中手动回滚、操作系统错误（比如磁盘满了）、断电等。这些情况都会导致事务执行到一半就结束，但是事务执行过程中可能已经修改了很多东西，为了保证事务的原子性，我们需要把东西改回原先的样子。</p>
+<p>为了能够顺利地恢复到写入之前的状态，我们需要先记录<strong>写入之前的数据</strong>，这就是<code>undo log</code>。</p>
+<p>下图undo log 的通用格式，一般insert和update&#x2F;delete的undo log日志格式有所不同。</p>
+<p><img src="https://images.ashery.cn/img/6377b78016f2c2beb1da25a3.png" alt="未命名文件"></p>
+<h2 id="实现持久性"><a href="#实现持久性" class="headerlink" title="实现持久性"></a>实现持久性</h2><p>MySQL通过<code>redo log</code>实现持久性。</p>
+<p>我们能够想到最简单实现持久性的方法就是：在事务提交完成之前把该事务所修改的所有页面都刷新到磁盘。这种方式称为<code>Commit Logging</code> ，即在log最后写入一个commit标识表示事务写入完成</p>
+<p>但是为了提高性能，MySQL是先内存buffer中写入数据，之后再刷到磁盘上的，即使返回事务执行完成，所有的数据也不一定都刷到了磁盘上，这种方式称为<code>WAL（write-ahead-logging）</code>。</p>
+<p>因为内存是易失性存储，为了保证持久性，即对内存buffer的修改不会丢失，我们需要在磁盘上<strong>记录我们写入了什么数据</strong>，包括写入的位置和实际值。</p>
+<p>绝大部分类型的<code>redo</code>日志都有下面这种通用的结构，当然实际的结构肯定更复杂多样</p>
+<p><img src="http://images.ashery.cn/img/6377b31816f2c2beb1d2cb83.png" alt="img"></p>
+<p>（附一张MySQL的写入流程图，可以更好的理解undo log 和 redo log）</p>
+<p><img src="http://images.ashery.cn/img/6377a9b416f2c2beb19e4fb6.jpg" alt="image"></p>
+<h2 id="实现隔离性"><a href="#实现隔离性" class="headerlink" title="实现隔离性"></a><strong>实现隔离性</strong></h2><p>隔离性保证了每个事务的操作不会彼此影响，理论上在某个事务对某个数据进行访问时，其他事务应该进行排队，当该事务提交之后，其他事务才可以继续访问这个数据。但是这样子的话对性能影响太大，所以这里的影响应该是相对的，即不同的影响程度对应不同的<strong>隔离级别</strong>。</p>
+<ul>
+<li><strong>串行化（SERIALIZABLE）</strong>：事务之间完全独立，读和写都不会影响其他事务和被其他事务影响。</li>
+<li><strong>可重复读（REPEATABLE READ）</strong>：在一个事务中，对同一字段的多次读取结果都是一致的，除非数据是被本事务修改，即限制其他事务对已读取数据的更新，但不限制其他事务的数据插入。</li>
+<li><strong>读已提交 （READ COMMITTED）</strong>：只能读取其他事务已经提交的数据。</li>
+<li><strong>读未提交（READ UNCOMMITTED）</strong>：可以读取其他事务未提交的数据。</li>
+</ul>
+<h3 id="不同隔离级别的问题"><a href="#不同隔离级别的问题" class="headerlink" title="不同隔离级别的问题"></a>不同隔离级别的问题</h3><p>多个事务并发访问数据，势必会造成一些并发问题，在不同的隔离级别下，表现也不相同。</p>
+<p>注意这里只讨论通用的隔离级别<strong>可能</strong>会出现的问题，并不具体到某一实现层面上，因为各个数据库产品实现的隔离级别支持的特性会有差异，导致某些问题在某些实现上不会出现，比如MySQL的可重复读的实现机制是可以避免一部分幻读的。</p>
+<ul>
+<li><p>串行化：强制事务并发执行，因此不会出现并发方法</p>
+</li>
+<li><p>可重复读：这一隔离级别限制其他事务对已读取数据的更新，但不限制其他事务的数据插入，因此会出现经典的**<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Isolation_(database_systems)#Phantom_reads">幻读</a>**问题。</p>
+<ul>
+<li><p><strong>幻读：在事务执行过程中，两个完全相同的范围查询得到了不同的结果集</strong>。即当用户读取<strong>某一范围</strong>的数据行时，另一个事务又在该范围内<strong>插入</strong>了新行，当用户再读取该范围的数据行时，会发现有新的“幻影” 行。虽然两次读取到的数据集不同，但是这并没有违背可重复读隔离级别的定义，因为<strong>可重读只要求第一次已经读到的数据在后续的读取中是相同的</strong>。</p>
+<p>更具体点，幻读可以分为两种情况：</p>
+<ul>
+<li><strong>只读事务</strong>：事务T1连续两次范围读取</li>
+<li><strong>读写事务</strong>：事务T1先进行一次范围读取，然后根据第一次读取的结果，将范围内的数据进行更改</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 只读事务</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="built_in">count</span>(<span class="number">1</span>) <span class="keyword">FROM</span> books <span class="keyword">WHERE</span> price <span class="operator">&lt;</span> <span class="number">100</span>					  		<span class="comment">/* 时间顺序：1，事务： T1 */</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> books(name,price) <span class="keyword">VALUES</span> (<span class="string">&#x27;深入理解Java虚拟机&#x27;</span>,<span class="number">90</span>); <span class="keyword">COMMIT</span>;   <span class="comment">/* 时间顺序：2，事务： T2 */</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="built_in">count</span>(<span class="number">1</span>) <span class="keyword">FROM</span> books <span class="keyword">WHERE</span> price <span class="operator">&lt;</span> <span class="number">100</span>; <span class="keyword">COMMIT</span>;					<span class="comment">/* 时间顺序：3，事务： T1 */</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 读写事务</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="built_in">count</span>(<span class="number">1</span>) <span class="keyword">FROM</span> books <span class="keyword">WHERE</span> price <span class="operator">&lt;</span> <span class="number">100</span>					  		<span class="comment">/* 时间顺序：1，事务： T1 */</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> books(name,price) <span class="keyword">VALUES</span> (<span class="string">&#x27;深入理解Java虚拟机&#x27;</span>,<span class="number">90</span>);<span class="keyword">COMMIT</span>;	   <span class="comment">/* 时间顺序：2，事务： T2 */</span></span><br><span class="line"><span class="keyword">UPDATE</span> books <span class="keyword">SET</span> price <span class="operator">=</span> price<span class="operator">*</span><span class="number">0.9</span> <span class="keyword">WHERE</span> price <span class="operator">&lt;</span> <span class="number">100</span>; <span class="keyword">COMMIT</span>;			<span class="comment">/* 时间顺序：3，事务： T1 */</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>读已提交：会造成<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Isolation_(database_systems)#Non-repeatable_reads"><strong>不可重复读</strong></a>问题，它是指在事务执行过程中，对同一行数据的两次查询得到了不同的结果</p>
+</li>
+<li><p>读未提交：会造成<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Isolation_(database_systems)#Dirty_reads"><strong>脏读</strong></a>问题，即读取到未提交的脏数据，因为可能会被修改或回滚。</p>
+</li>
+</ul>
+<h3 id="不同隔离级别的实现"><a href="#不同隔离级别的实现" class="headerlink" title="不同隔离级别的实现"></a>不同隔离级别的实现</h3><p>本节讨论如何实现不同的隔离级别，重点在于可重读隔离级别的实现，并且结合MySQL，进一步解决可重复读下会出现的幻读问题。</p>
+<p>普遍实现隔离性的方式就是加锁，现代数据库均提供了以下三种锁：</p>
+<ul>
+<li><strong>写锁</strong>（Write Lock，也叫作排他锁，eXclusive Lock，简写为 X-Lock）：如果数据有加写锁，就只有持有写锁的事务才能对数据进行写入操作，<strong>数据加持着写锁时，其他事务不能写入数据，也不能施加读锁</strong>。</li>
+<li><strong>读锁</strong>（Read Lock，也叫作共享锁，Shared Lock，简写为 S-Lock）：多个事务可以对同一个数据添加多个读锁，<strong>数据被加上读锁后就不能再被加上写锁，所以其他事务不能对该数据进行写入，但仍然可以读取</strong>。对于持有读锁的事务，如果该数据只有它自己一个事务加了读锁，允许直接将其升级为写锁，然后写入数据。</li>
+<li><strong>范围锁</strong>（Range Lock）：对于某个范围直接加排他锁，在这个范围内的数据不能被写入。</li>
+</ul>
+<p>我们可以通过组合使用这些锁来实现不同的隔离级别，并尽可能保证并发度。</p>
+<ul>
+<li><p><strong>可串行化</strong>：最最直接的方式实现可串行化就是设置一个全局锁，所有的事务都需要获取这个全局锁再进行操作，但是这样太慢了，连基本的并发读都不能支持。因此可以使用读写锁的方式提高性能，我们对事务所有读、写的数据全都加上读锁、写锁和范围锁可做到可串行化的隔离级别，具体可参考<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Two-phase_locking">2PL</a>。</p>
+</li>
+<li><p><strong>可重复读</strong>：<strong>对事务所涉及的数据加读锁和写锁，且一直持有至事务结束</strong>，但不再加范围锁。其实这里的并发程度还是很低的，因为我们读取的时候还是会加写锁，以防止其他事务update当前事务已经读到的数据。</p>
+<p>MySQL 中InnoDB引擎是通过<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Multiversion_concurrency_control">MVCC</a>（Multi-Version Concurrency Control）来实现隔离性的，为了提高数据库并发性能，用更好的方式去处理<strong>读-写冲突</strong>，做到即使有读写冲突时，也能做到不加锁。MVCC的简单原理就是在事务<strong>第一次</strong>执行查询操作时，会记录下这次查询后的结果即快照，之后<strong>查询</strong>的时候就会返回这次快照的数据，天然的保证的一次事务中多次读取的结果相同。但是对于更新操作，需要去读最新的版本，防止产生写-写冲突。因此使用MySQL MVCC的方式实现可重复读可以提高读-写场景下的并发度，但如果是两个事务同时修改数据，即写-写的情况，那就没有多少优化的空间了，加锁几乎是唯一可行的解决方案，当然也有其他稍微优化的解决方案，比如各种乐观锁的实现。</p>
+<p>回过头来看幻读问题，一般的可重复读是无法解决幻读问题的，MySQL的MVCC机制可以解决幻读的第一种情况即只读事务，但无法解决第二种情况即读写事务。如果有需要，我们可以在事务的第一次查询上，显式的加上范围锁来完全解决幻读的问题，个人感觉这种做法已经到了可串行化的级别了。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 读写事务</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="built_in">count</span>(<span class="number">1</span>) <span class="keyword">FROM</span> books <span class="keyword">WHERE</span> price <span class="operator">&lt;</span> <span class="number">100</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>					<span class="comment">/* 时间顺序：1，事务： T1 */</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> books(name,price) <span class="keyword">VALUES</span> (<span class="string">&#x27;深入理解Java虚拟机&#x27;</span>,<span class="number">90</span>);<span class="keyword">COMMIT</span>;	   <span class="comment">/* 时间顺序：2，事务： T2，由于加了范围锁，这里应该会被阻塞，等待T1执行完毕 */</span></span><br><span class="line"><span class="keyword">UPDATE</span> books <span class="keyword">SET</span> price <span class="operator">=</span> price<span class="operator">*</span><span class="number">0.9</span> <span class="keyword">WHERE</span> price <span class="operator">&lt;</span> <span class="number">100</span>; <span class="keyword">COMMIT</span>;			<span class="comment">/* 时间顺序：3，事务： T1 */</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>读已提交</strong>：对事务涉及的数据加的写锁会一直持续到事务结束，<strong>但加的读锁在查询操作完成后就马上会释放</strong>。</p>
+</li>
+<li><p><strong>读未提交</strong>：对事务涉及的数据只加写锁，会一直持续到事务结束，但<strong>完全不加读锁</strong>。</p>
+</li>
+</ul>
+<hr>
+<blockquote>
+<p> 参考</p>
+<p> <a target="_blank" rel="noopener" href="http://icyfenix.cn/architect-perspective/general-architecture/transaction/local.html">凤凰架构</a></p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://blog.ashery.cn">Asher Yan</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://blog.ashery.cn/posts/42434.html">https://blog.ashery.cn/posts/42434.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://blog.ashery.cn" target="_blank">Asher Yan's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a><a class="post-meta__tags" href="/tags/MySQL/">MySQL</a><a class="post-meta__tags" href="/tags/%E4%BA%8B%E5%8A%A1/">事务</a></div><div class="post_share"><div class="social-share" data-image="https://images.ashery.cn/img/6378dcc116f2c2beb17e3666.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/posts/26567.html"><img class="prev-cover" src="http://images.ashery.cn/img/6382506b16f2c2beb1a9fbaf.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">事务（二）：分布式事务</div></div></a></div><div class="next-post pull-right"><a href="/posts/16107.html"><img class="next-cover" src="https://images.ashery.cn/img/6318b29116f2c2beb15628f3.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Hello World</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/posts/26567.html" title="事务（二）：分布式事务"><img class="cover" src="http://images.ashery.cn/img/6382506b16f2c2beb1a9fbaf.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-11-27</div><div class="title">事务（二）：分布式事务</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="http://images.ashery.cn/img/202304202309024.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Asher Yan</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">13</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">14</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/YHsilver"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E4%BA%8B%E5%8A%A1"><span class="toc-number">1.</span> <span class="toc-text">什么是事务</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E4%BA%8B%E5%8A%A1"><span class="toc-number">2.</span> <span class="toc-text">本地事务</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1%E5%AE%9E%E7%8E%B0"><span class="toc-number">3.</span> <span class="toc-text">事务实现</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E5%8E%9F%E5%AD%90%E6%80%A7"><span class="toc-number">3.1.</span> <span class="toc-text">实现原子性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E6%8C%81%E4%B9%85%E6%80%A7"><span class="toc-number">3.2.</span> <span class="toc-text">实现持久性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E9%9A%94%E7%A6%BB%E6%80%A7"><span class="toc-number">3.3.</span> <span class="toc-text">实现隔离性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8D%E5%90%8C%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">3.3.1.</span> <span class="toc-text">不同隔离级别的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8D%E5%90%8C%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-number">3.3.2.</span> <span class="toc-text">不同隔离级别的实现</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/5612ed5e.html" title="工作与生活的思考"><img src="http://images.ashery.cn/img/P1375432.JPG" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="工作与生活的思考"/></a><div class="content"><a class="title" href="/posts/5612ed5e.html" title="工作与生活的思考">工作与生活的思考</a><time datetime="2023-09-10T03:16:13.000Z" title="发表于 2023-09-10 11:16:13">2023-09-10</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/6918edaf.html" title="ChatGPT的X种用途"><img src="http://images.ashery.cn/img/image-20230406210518731.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="ChatGPT的X种用途"/></a><div class="content"><a class="title" href="/posts/6918edaf.html" title="ChatGPT的X种用途">ChatGPT的X种用途</a><time datetime="2023-03-20T07:06:59.000Z" title="发表于 2023-03-20 15:06:59">2023-03-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/8c5a54e3.html" title="Go 垃圾回收介绍"><img src="http://images.ashery.cn/img/P1100340.JPG" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Go 垃圾回收介绍"/></a><div class="content"><a class="title" href="/posts/8c5a54e3.html" title="Go 垃圾回收介绍">Go 垃圾回收介绍</a><time datetime="2023-03-12T07:07:10.000Z" title="发表于 2023-03-12 15:07:10">2023-03-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/80b7b4ba.html" title="hacker &amp; painter"><img src="http://images.ashery.cn/img/61MSZsYP-NL.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="hacker &amp; painter"/></a><div class="content"><a class="title" href="/posts/80b7b4ba.html" title="hacker &amp; painter">hacker &amp; painter</a><time datetime="2023-03-12T07:06:45.000Z" title="发表于 2023-03-12 15:06:45">2023-03-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/52b98882.html" title="Kubernetes 基本介绍"><img src="http://images.ashery.cn/img/DSC01653%20(2).JPG" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Kubernetes 基本介绍"/></a><div class="content"><a class="title" href="/posts/52b98882.html" title="Kubernetes 基本介绍">Kubernetes 基本介绍</a><time datetime="2023-02-04T11:34:20.000Z" title="发表于 2023-02-04 19:34:20">2023-02-04</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2022 - 2023 By Asher Yan</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
